@@ -1,0 +1,150 @@
+1. Brute force
+
+    Iterate over each string and compare it with every other string.
+        If no common characters found, check if there length's product is maximum.
+
+Time Complexity - O(n^2.k^2),
+where -
+n = number of strings.
+k = average length of the strings
+n^2 = to iterate over all the strings and compare it with every other string.
+k^2 = for each string s1 and s2, need to compare all the characters of s1 and s2.
+
+Space Complexity - O(1), no extra space used.
+
+2. Using HashSet
+
+Idea is to reduce the k^2 to k by puting all the characters of each string into a set.
+
+Time Complexity - O(n.k) + O(n^2.k) ~ O(n^2.k)
+where -
+n.k = to put all characters of each string into the set
+n^2 = to iterate over all the strings and compare it with every other string.
+k = for each string s1, we need to iterate over all the k characters and check if the s2 string's set contains the character of s1 in O(1) time
+
+Space Complexity - O(n.k), to store all characters of each string into the set.
+Finally code:-
+class Solution {
+    public int maxProduct(String[] words) {
+        int n = words.length;
+        List<Set<Character>> lst = new ArrayList(n);
+        int max = 0;
+
+        for(String word : words) {	
+            Set<Character> set = new HashSet();
+            lst.add(set);
+            for(int i=0; i<word.length(); i++) {
+                set.add( word.charAt(i) );
+            }
+        }
+
+        for(int i=0; i<n; i++) {
+            Set<Character> setI = lst.get(i);
+            for(int j=i+1; j<n; j++) {
+                boolean hasCommon = false;
+                Set<Character> setJ = lst.get(j);
+                for(Character c : setI) {
+                    if( setJ.contains(c) ) {
+                        hasCommon = true;
+                        break;
+                    }
+                }
+
+                if( !hasCommon ) 
+                    max = Math.max(max, words[i].length()*words[j].length());	
+            }
+        }
+        return max;
+    }
+}
+3. Using Bit Manipulation
+
+Idea is to create bitmask of each string and compare it with the bitmask of other strings.
+
+Bitmask Explaination -
+Let's say we have three strings "abc", "def" and "abde", corresponding bitmasks of these strings will be "111", "111000", and "11011". how?
+
+For each character we'll need to find the index where we need to set 1 in our bitmask.
+So for character "a" index will be 0, for "b" it will be 1, for "c" it will be 2 and so on.
+
+Index can be easily found by subtracting each character by 'a'
+Ex.
+
+'a' - 'a' = 0
+'b' - 'a' = 1
+'c' - 'a' = 2
+
+Next step is to left shift 1 by the index value.
+
+for 'a', index will be 0 
+1 << 0 = 1
+
+'b', index will be 1
+1 << 1 = 10
+
+'c', index will be 2
+1 << 2 = 100
+
+After shifting, the last step is to OR the shifted value of current character with the bitmask of current string. So if we OR the shifted values of character "a", "b" and "c".
+
+001 | 010 | 100 = 111
+
+Check for common characters -
+If two strings s1 and s2 have common characters, then they will have 1 at the same index in the bitmask and if we do AND of the bitmasks of s1 and s2, it will result in a value greater than 0.
+bitmask[s1] & bitmask[s2] = 0, if no common characters  
+							>0, otherwise
+
+Ex. bitmask of "abc" and "def" is 111 and 111000, respectively.
+
+111 & 111000 = 0, hence no common characters
+
+bitmask of "abc" and "abde" is 111 and 11011, respectively.
+
+111 & 11011 = 00011 > 0, hence common characters found
+bitmask[s1] & bitmask[s2] = 0, if no common characters  
+							>0, otherwise
+
+Ex. bitmask of "abc" and "def" is 111 and 111000, respectively.
+
+111 & 111000 = 0, hence no common characters
+
+bitmask of "abc" and "abde" is 111 and 11011, respectively.
+
+111 & 11011 = 00011 > 0, hence common characters found
+Finally, code -
+
+class Solution {
+    public int maxProduct(String[] words) {
+        int n = words.length;
+        int[] bitmask = new int[n]; 
+        int max = 0;
+
+        for(int i=0; i<n; i++) {
+            // Calculate bitmask for current word
+            for(int j=0; j<words[i].length(); j++) {
+                // index will be - for a -> 0, b -> 1, c -> 2 and so on
+                int index = words[i].charAt(j) - 'a';
+                
+                // left shift 1 by index and OR it with the current bitmask
+                bitmask[i] |= (1 << index);
+            }
+            
+            // Compare bitmask of current string with previous strings bitmask
+            for(int j=0; j<i; j++) {
+                /* If there is a 1 at the same index of current string {i} and {j},
+                then bitmask of i and j string will result in a number greater than 0,
+                else it will result in 0 */
+                if( (bitmask[i] & bitmask[j]) == 0 ) 
+                    max = Math.max(max, words[i].length()*words[j].length());	
+            }
+        }
+
+        return max;
+    }
+}
+Time Complexity = O(n.(k+n))
+where
+n = to iterate over all the strings
+k+n = k to iterate over characters of current string and calculate bitmask and n to compare the bitmask with every other strings.
+
+Space Complexity = O(n), to store bitmask of each string.
