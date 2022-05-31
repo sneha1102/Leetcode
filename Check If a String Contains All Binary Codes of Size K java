@@ -1,3 +1,6 @@
+Question:- Given a binary string s and an integer k, return true if every binary code of length k is a substring of s. Otherwise, return false.
+
+Solution:-
 Approach 1: HashSet
 First, let's make sure we're on the same page regarding the simpler approach. This approach involves adding all susbtrings of length k to a hashset and checking if the set has 2^k elements (if you're confident with this, feel free to skip to approach 2).
 
