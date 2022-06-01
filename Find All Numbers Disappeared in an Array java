@@ -14,8 +14,6 @@ finally return answer list.
 
 class Solution {
     public List<Integer> findDisappearedNumbers(int[] nums) {
-        // n = nums.length 
-        
         int ind; 
         for(int i=0; i<nums.length; i++) {
             ind = Math.abs(nums[i]) - 1;  
