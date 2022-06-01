@@ -1,0 +1,35 @@
+Question:-
+Given an array nums of n integers where nums[i] is in the range [1, n], return an array of all the integers in the range [1, n] that do not appear in nums.
+
+Solution:-
+We have used nagative marking .
+eg. 4 , 3, 2, 7, 8, 2, 3, 1
+when we process nums[i] --> change the sign of |nums[i]| - 1 to negative .
+
+after processing all the array like this, iterate the array once more and ,
+let a value at index 'i' is negative then i+1 is present in array atleast once. and if a value at index 'i' is positive then i+1 is not present in array so add to to our answer list .
+
+finally return answer list.
+
+
+class Solution {
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        // n = nums.length 
+        
+        int ind; 
+        for(int i=0; i<nums.length; i++) {
+            ind = Math.abs(nums[i]) - 1;  
+            nums[ind] = -Math.abs(nums[ind]); 
+        }
+        
+        List<Integer> answer = new ArrayList<>(); 
+        
+        for(int i=0; i<nums.length; i++) {
+            //if negative then i+1 is present 
+            if(nums[i] >= 0) {
+                answer.add(i+1); 
+            }
+        }
+        
+        return answer; 
+    }
