@@ -1,0 +1,30 @@
+Question:-
+Given an integer array nums, handle multiple queries of the following type:
+
+    Calculate the sum of the elements of nums between indices left and right inclusive where left <= right.
+
+Implement the NumArray class:
+
+    NumArray(int[] nums) Initializes the object with the integer array nums.
+    int sumRange(int left, int right) Returns the sum of the elements of nums between indices left and right inclusive (i.e. nums[left] + nums[left + 1] + ... + nums[right]).
+
+Solution:-
+We will find the prefix sum for each element then nums[right] will contains the total sum starting from nums[0]. So ans will be 
+ans = nums[right] - nus[left - 1], there will be some corner case so will be handle that.
+
+class NumArray {
+    int[] nums;
+    public NumArray(int[] nums) {
+        for(int i = 1; i < nums.length; i++){
+            nums[i] += nums[i - 1];
+        }
+        this.nums = nums;
+    }
+    
+    public int sumRange(int left, int right) {
+        int total = nums[right];
+        int extra = (left != 0) ? nums[left - 1] : 0;
+        int ans = total - extra;
+        return ans;
+    }
+}
