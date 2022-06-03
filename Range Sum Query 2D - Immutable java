@@ -1,0 +1,45 @@
+Question:-
+Given a 2D matrix matrix, handle multiple queries of the following type:
+
+    Calculate the sum of the elements of matrix inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+
+Implement the NumMatrix class:
+
+    NumMatrix(int[][] matrix) Initializes the object with the integer matrix matrix.
+    int sumRegion(int row1, int col1, int row2, int col2) Returns the sum of the elements of matrix inside the rectangle defined by its upper left corner (row1, col1) and lower right corner (row2, col2).
+
+
+Solution:-
+We will first find the prefix sum of each column for every row row then we will find the prefix sum of each row for every column. Then [r2, c2] will contains the total
+sum starting from [0, 0]. So we are required to find sum between [r1, c1] and [r2, c2]. 
+So we will remove the extra cells sum using below expression:-
+ans = [r2, c2] - ([r2, c1 -1] + [r1 - 1, c2] - [r1 - 1, c1 - 1]) as [r1 - 1, c1 - 1] is summed up twice so we will subtract it from extra.
+There would be some corner case so we will handle that.
+
+class NumMatrix {
+
+    int[][] matrix;
+    public NumMatrix(int[][] matrix) {
+        for(int i=0;i<matrix.length;i++){
+            for(int j=1;j<matrix[0].length;j++){
+                matrix[i][j] += matrix[i][j-1];
+            }
+        }
+        
+        for(int i=1;i<matrix.length;i++){
+            for(int j=0;j<matrix[0].length;j++){
+                matrix[i][j] += matrix[i-1][j];
+            }
+        }
+        
+        this.matrix = matrix;
+    }
+    
+    public int sumRegion(int row1, int col1, int row2, int col2) {
+        int total = matrix[row2][col2];
+        int extra = (col1!=0?matrix[row2][col1-1]:0) + (row1!=0?matrix[row1-1][col2]:0) - ((row1!=0 && col1!=0)?matrix[row1-1][col1-1]:0);
+        return total - extra;
+    }
+}
+TC - O(M * N)
+SC - O(M * N)
