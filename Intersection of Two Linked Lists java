@@ -1,0 +1,28 @@
+Question:-
+Given the heads of two singly linked-lists headA and headB, return the node at which the two lists intersect. If the two linked lists have no intersection at all, return null.
+
+Solution:-
+
+A key observation here is that, if that if we visualise both lists as separate lists, their tail nodes are identical both in value and in quantity.
+If only the nodes before the interesction had the same length as well. That would make our one-pass solution really simple.
+
+In this case, we would like the lengths before the intersection to be equal as well. That way, we would only need to loop through both lists with the guarrantee that both lists will reach the intersection node at the same time.
+
+The next observation is that, while both lists may be of different lenghts, list A + list B has the same length as list B + list A.
+If in our one-pass solution we perform two simultaneous loops (first go through list A and then through list B, and another going through list B then list A), we are not only guarranteed to be looping through combined lists of the same length but we're also guarranteed that the last nodes of both iterations will be our red nodes.
+
+What if there's no intersection ?
+In that case, we would like for our loop will stop when we've reached the end of both combined lists. That is, when both our node pointers are null. Luckily, as you'll see in the code, our while loop's exist condition accounts for this edge case as well.
+
+Code:-
+public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+    ListNode ptrA = headA, ptrB = headB;
+    while (ptrA != ptrB) { // loop until we found the first common node
+        ptrA = ptrA == null ? headB : ptrA.next; // once we're done with A, move to B
+        ptrB = ptrB == null ? headA : ptrB.next; // once we're done with B, move to A
+	}
+	return ptrA;
+}
+
+TC :- O(A + B)
+SC : O(1)
