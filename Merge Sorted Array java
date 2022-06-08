@@ -1,0 +1,47 @@
+Question:-
+You are given two integer arrays nums1 and nums2, sorted in non-decreasing order, and two integers m and n, representing the number of elements in nums1 and nums2 respectively.
+
+Merge nums1 and nums2 into a single array sorted in non-decreasing order.
+
+The final sorted array should not be returned by the function, but instead be stored inside the array nums1. To accommodate this, nums1 has a length of m + n, where the first m elements denote the elements that should be merged, and the last n elements are set to 0 and should be ignored. nums2 has a length of n.
+
+Solution:-
+
+In classic merge two sorted array question, we put two pointers in the begining on both arrays, we compare the first elements and select minimum and move that pointer ahead.
+In this time is O ( M + N ) but extra space O ( M + N ) is used.
+
+In the question we are provided with num1 with size N + M, so we make use of it.
+We put two pointers
+    At m-1 for nums1
+    At n-1 for nums2
+We compare these values and put the larger of them at the end of array nums1.
+Decrement the pointer of value chosen and keep track of where next value is to be added.
+
+Code:-
+
+class Solution 
+{
+    public void merge(int[] nums1, int m, int[] nums2, int n) 
+    {    
+        if(n == 0)
+            return;
+        
+        int lastIndex = m + n - 1;
+        m--;
+        n--;
+        
+        while(n >= 0)
+        {
+            if(m >= 0 && nums1[m] > nums2[n])
+            {
+                nums1[lastIndex] = nums1[m--];
+            }
+            else
+            {
+                nums1[lastIndex] = nums2[n--];
+            }
+            lastIndex--;
+        }
+        return;
+    }
+}
