@@ -1,0 +1,49 @@
+Question:-
+You are given an integer array nums and an integer x. In one operation, you can either remove the leftmost or the rightmost element from the array nums and subtract its value from x. Note that this modifies the array for future operations.
+
+Return the minimum number of operations to reduce x to exactly 0 if it is possible, otherwise, return -1.
+
+Solution:-
+
+    The number of elements removed equals n minus the number of elements that aren't removed.
+
+        Therefore, to find the minimum number of elements to remove, we can find the maximum number of elements to not remove!
+
+So, instead of trying to find the minimum number of operations, why don't we focus on finding the longest subarray in the middle. One main thing to note is that our subarray should sum to sum - x (where sum is the sum of all elements in our array).
+Why? because the middle elements are technically the ones we don't want. If the sum of the outer elements equals x, then we're looking for a middle sum of sum - x. 
+
+So our ques become->
+Finding our max middle subarray length:
+
+We can find this using a two-pointer / sliding window approach. Start left and right both at index 0.
+
+    Increment right until the current window sum is > sum - x
+    Update our maxLength if and only if our current window sum == sum - x
+    Repeat the above steps until we reach the end of the array.
+ex - [1,5,3,9,1,7,1,3], x = 12
+sum - 12 = 18
+[1,5,3,9,1,7,1,3], get cursum > 18
+ l       r
+
+[1,5,3,9,1,7,1,3], increase left until cursum <= 18
+   l     r
+update max len only if cursum == 18
+
+
+Code:-
+public int minOperations(int[] nums, int x) {
+	int sum = 0;
+	for (int num: nums) sum += num;
+
+	int maxLength = -1, currSum = 0;
+	for (int l=0, r=0; r<nums.length; r++) {
+		currSum += nums[r];
+		while (l <= r && currSum > sum - x) currSum -= nums[l++];
+		if (currSum == sum - x) maxLength = Math.max(maxLength, r-l+1);
+	}
+
+	return maxLength == -1 ? -1 : nums.length - maxLength;
+}
+
+TC - O(N)
+SC - O(1)
