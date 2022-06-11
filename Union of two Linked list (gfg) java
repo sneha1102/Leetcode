@@ -6,25 +6,22 @@ Solution:-
 
 class Solution
 {
-public static Node findUnion(Node head1,Node head2)
-	{
-	    Set<Integer> s = new TreeSet<>();
-	    while(head1 != null || head2 != null){
-             if(head1 != null){
-                 s.add(head1.data); 
-		 head1 = head1.next;
-             }
-             if(head2 != null){
-                 s.add(head2.data);
-		 head2 = head2.next;
-             }
-         }
-         Node ans = new Node(0);
-         Node temp = ans;
-         for(int i : s){
-             temp.next = new Node(i);
-             temp = temp.next;
-         }
-         return ans.next;
-	}
+    public Node removeDuplicates(Node head) 
+    {
+         // Your code here    {
+        HashSet<Integer> set = new HashSet<>();
+        Node curr = head, prev = null;
+        while (curr != null) {
+            int val = curr.data;
+             if (set.contains(val)) {
+                prev.next = curr.next;
+            }
+            else {
+                set.add(val);
+                prev = curr;
+            }
+            curr = curr.next;
+        }
+        return head;
+    }
 }
