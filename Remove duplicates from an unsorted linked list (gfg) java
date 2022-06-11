@@ -1,0 +1,23 @@
+Question:-
+Write a removeDuplicates() function that takes a list and deletes any duplicate nodes from the list. The list is not sorted. 
+For example if the linked list is 12->11->12->21->41->43->21 then removeDuplicates() should convert the list to 12->11->21->41->43.
+
+Solution:-
+
+ static void removeDuplicate(Node head)
+    {
+        HashSet<Integer> set = new HashSet<>();
+        Node curr = head, prev = null;
+        while (curr != null) {
+            int val = cur.val;
+             if (set.contains(val)) {
+                prev.next = curr.next;
+            }
+            else {
+                set.add(val);
+                prev = curr;
+            }
+            curr = curr.next;
+        }
+        }
+  
