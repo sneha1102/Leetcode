@@ -1,0 +1,42 @@
+Question:-
+Given a linked list sorted in ascending order and an integer called data, insert data in the linked list such that the list remains sorted.
+
+Solution:-
+
+/*class Node
+    {
+        int data;
+        Node next;
+        Node(int d) {data = d; next = null; }
+    }*/
+
+// sortedInsert method should return the head of the modified linked list.
+class Solution {
+    Node sortedInsert(Node head1, int key) {
+        // Add your code here.
+        Node temp = head1;
+        Node cur = head1;
+        
+        if (cur.data > key) {
+            cur = new Node(key);
+            cur.next = head1;
+            return cur;
+        }
+        
+        while(temp.next != null && temp.next.data < key){
+            temp = temp.next;
+        }
+        
+        if(temp.next != null){
+            Node t = temp.next;
+            Node node = new Node(key);
+            temp.next = node;
+            node.next = t;
+        }else{
+            Node t = new Node(key);
+            temp.next = t;
+        }
+        
+        return head1;
+    }
+}
