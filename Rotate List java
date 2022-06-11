@@ -1,0 +1,57 @@
+Question:-
+Given the head of a linked list, rotate the list to the right by k places.
+
+Solution:-
+
+Find count
+Calculate rotation point k = count - (k % count)
+Traverse till rotation point, set next to null to disconnect and make new head
+Traverse till end and join to original head
+
+Code:-
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+        if(head == null || head.next == null){
+            return head;
+        }
+        int count = 0;
+        ListNode temp = head;
+        while(temp != null){
+            count ++;
+            temp = temp.next;
+        }
+        if(k % count == 0){
+            return head;
+        }
+        k = count - (k%count);
+        temp = head;
+        while(k > 1){
+            temp = temp.next;
+            k--;
+        }
+        ListNode newHead = temp.next;
+        //disconnect new head
+        temp.next = null;
+        
+        //traverse from new head till end and connect to original head
+        temp = newHead;
+        while(temp.next != null){
+            temp = temp.next;
+        }
+        
+        // connect to original head
+        temp.next = head;
+        
+        return newHead;
+    }
+}
