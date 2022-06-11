@@ -1,0 +1,35 @@
+Question:-
+Given two linked lists, your task is to complete the function makeUnion(), that returns the union of two linked lists. This union should include all the distinct elements only.
+
+Solution:-
+
+
+class Solution
+{
+	public static Node findUnion(Node head1,Node head2)
+	{
+	    //Add your code here.
+	    ArrayList<Integer> list = new ArrayList<>();
+	    Node t1 = head1;
+	    Node t2 = head2;
+	    while(t1 != null) {
+	        if(!list.contains(t1.data)) 
+	        list.add(t1.data);
+	        t1 = t1.next;
+	    }
+	    while(t2 != null) {
+	        if(!list.contains(t2.data)) 
+	        list.add(t2.data);
+	        t2 = t2.next;
+	    }
+	    Collections.sort(list);
+	    Node dummy = new Node(0);
+	    Node temp = dummy;
+	    for(int l : list) {
+	        Node t = new Node(l);
+	        dummy.next = t;
+	        dummy = dummy.next;
+	    }
+	    return temp.next;
+	}
+}
