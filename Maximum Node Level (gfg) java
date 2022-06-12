@@ -1,0 +1,50 @@
+Question:-
+Given a Binary tree. Find the level in binary tree which has the maximum number of nodes.
+
+Solution:-
+
+/*Complete the function below
+Node is as follows:
+class Node{
+	int data;
+	Node left,right;
+	
+	Node(int item)
+	{
+	    data = item;
+	    left = right = null;
+	}
+}
+*/
+class Tree
+{
+    // Return the level (0-indexed) with maximum number of nodes.
+    public static int maxNodeLevel(Node root)
+    {
+        // add your code here
+        if(root == null)
+            return -1;
+        Queue<Node> q = new LinkedList<>();
+        q.offer(root);
+        int max = Integer.MIN_VALUE;
+        int level = 0, ansLevel = 0;
+        while(!q.isEmpty()){
+            int size = q.size();
+            if(size > max){
+                max = size;
+                ansLevel = level;
+            }
+            while(size-- > 0){
+                Node cur = q.poll();
+                if(cur.left != null){
+                    q.offer(cur.left);
+                }
+                if(cur.right != null){
+                    q.offer(cur.right);
+                }
+            }
+            level++;
+        }
+        return ansLevel;
+    }
+}
