@@ -1,0 +1,33 @@
+Question:-
+Given a Binary Tree. Check whether the Binary tree is a full binary tree or not.
+
+Solution:-
+/*Complete the function below
+Node is as follows:
+class Node 
+{
+    int data;
+    Node left, right;
+  
+    Node(int item) 
+    {
+        data = item;
+        left = right = null;
+    }
+}
+*/
+class GfG
+{
+    // Return True if the given Binary Tree is a Full Binary Tree. Else return False
+	boolean isFullTree(Node node)
+    {
+        //add code here.
+        if(node == null)
+            return true;
+        if(node.left == null && node.right == null)
+            return true;
+        if(node.left != null && node.right != null)
+            return isFullTree(node.left) && isFullTree(node.right);
+        return false;
+    }
+}
