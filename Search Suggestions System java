@@ -1,0 +1,50 @@
+Question:-
+You are given an array of strings products and a string searchWord.
+
+Design a system that suggests at most three product names from products after each character of searchWord is typed. Suggested products should have common prefix with searchWord. If there are more than three products with a common prefix return the three lexicographically minimums products.
+
+Return a list of lists of the suggested products after each character of searchWord is typed.
+
+Solution:-
+Here are the steps:
+
+    Read each of the products one by one e.g -> app, apple, apart
+    For each element store the values in Map for each of the values and sort them using Treeset:
+    a. a - {apart, app, apple}
+    b. ap - {apart, app, apple}
+    c. apa - {apart}
+    d. apar - {apart}
+    e. apart - {apart}
+    f. app - {app, apple}
+    g. appl - {apple}
+    h. apple - {apple}
+    Once we get the above, its easy to retrive the record now by reading the given string
+    Get the top 3 elements from the treeset and return as list
+Code:-
+
+class Solution {
+    public List<List<String>> suggestedProducts(String[] products, String searchWord) {
+        List<List<String>> res = new ArrayList<>();
+        Map<String, TreeSet<String>> m = new HashMap<>();
+        for(String prod : products){
+            String t = "";
+            for(int i = 0; i < prod.length() ; i++){
+                t = t + prod.charAt(i);
+                TreeSet<String> set = m.getOrDefault(t, new TreeSet<String>());
+                set.add(prod);
+                m.put(t, set);
+            }
+        }
+        String t = "";
+        for(int i = 0; i < searchWord.length(); i++){
+            t = t + searchWord.charAt(i);
+            TreeSet<String> set = m.getOrDefault(t, new TreeSet<String>());                       List<String> list = new ArrayList<String>();
+            for(int j = 0; j < 3 && set.size() > 0; j++){
+				list.add(set.first());
+				set.remove(set.first());
+			}
+			res.add(list);
+            }
+        return res;
+    }
+}
