@@ -1,0 +1,27 @@
+Question:-
+Move all zeroes of an integer array to the start.
+Ex - [1, 0, 4, 2, 0, 7]
+o/p - [0, 0, 1, 4, 2, 7]
+
+Solution:-
+class Solution{
+  void moveZeroesToStart(int arr[]){
+  int cur = arr.length - 1;
+    for(int i = arr.length - 1; i >= 0; i--){
+      if(arr[i] != 0){
+        arr[cur--] = arr[i];
+      }
+    }
+    while(cur >= 0){
+      arr[cur--] = 0;
+    }
+    
+    for (int i = 0; i < arr.length; i++) {
+            System.out.print(arr[i] + " ");
+        }
+}
+
+}
+
+TC - O(N)
+SC - O(1)
