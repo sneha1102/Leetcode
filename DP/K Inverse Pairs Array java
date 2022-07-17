@@ -1,0 +1,50 @@
+Question:-
+For an integer array nums, an inverse pair is a pair of integers [i, j] where 0 <= i < j < nums.length and nums[i] > nums[j].
+
+Given two integers n and k, return the number of different arrays consist of numbers from 1 to n such that there are exactly k inverse pairs. Since the answer can be huge, return it modulo 109 + 7.
+
+Solution:-
+
+Approach:- We will use dp.
+
+dp[N][K] = dp[N - 1][K] -->put Nth element at the end so no of inversions pair will be same.
+dp[N][K] = dp[N - 1][K] + dp[N - 1][[K - 1] + dp[N - 1][K - 2] + ...... + dp[N - 1][K - i] where i <= min(N - 1, K) as at max we can put nth element at n-1 th position
+
+ex - let N = 3
+N
+_ _ _ -> We can push Nth element at first position then max inversion count will be N - 1. so min(K, N - 1)
+
+Let take K = 6, N = 4
+
+dp[4][6] = dp[3][6] + dp[3][5] + dp[3][4] + dp[3][3]-->(1)
+dp[4][7] = dp[3][7] + dp[3][6] + dp[3][5] + dp[3][4]-->(2)
+(2) - (1)
+
+dp[4][7] = dp[4][6] + dp[3][7] - dp[3][3]
+dp[N][K + 1] = dp[N][K] + dp[N - 1][K + 1] - dp[N - 1][K - N + 1]
+k ~ k - 1 (take)
+dp[N][K] = dp[N][K - 1] + dp[N - 1][K] - dp[N - 1][K - N] --> we can this in generalize way
+
+
+Code :-
+
+class Solution {
+    public int kInversePairs(int n, int k) {
+        int dp[][] = new int [n + 1][k + 1];
+        int mod = 1000000007;
+        for(int i = 0; i <= n; i++){
+            dp[i][0] = 1; // corner case when k = 0, no of inversion count = 1 as all sorted array...so 1 inversion count is possible
+        }
+        for(int N = 1; N <= n; N++){
+            for(int K = 1; K <= k; K++){
+            dp[N][K] = (dp[N][K - 1] + dp[N - 1][K]) % mod;
+            if(K - N >= 0){
+                dp[N][K] = ((dp[N][K]  - dp[N - 1][K - N]) + mod) % mod;
+            }
+            }
+        }
+        return dp[n][k];
+    }
+}
+
+TC :- O(N * K)
