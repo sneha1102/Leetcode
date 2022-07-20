@@ -1,0 +1,57 @@
+Question:-
+
+Given a string s and an array of strings words, return the number of words[i] that is a subsequence of s.
+
+A subsequence of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.
+
+    For example, "ace" is a subsequence of "abcde".
+
+
+Example 1:
+
+Input: s = "abcde", words = ["a","bb","acd","ace"]
+Output: 3
+Explanation: There are three strings in words that are a subsequence of s: "a", "acd", "ace".
+
+Example 2:
+
+Input: s = "dsahjpjauf", words = ["ahjpjau","ja","ahbwzgqnuk","tnmlanowax"]
+Output: 2
+
+Solution:-
+
+class Solution {
+    public int numMatchingSubseq(String S, String[] words) {
+        int cnt = 0;
+        Map<Character, Queue<String>> m = new HashMap<>();
+        for(int i = 0; i < S.length(); i++){
+            m.putIfAbsent(S.charAt(i), new LinkedList<>());
+        }
+        for(String w : words){
+            char startChar = w.charAt(0);
+            if(m.containsKey(startChar)){
+                m.get(startChar).offer(w);
+            }
+        }
+        for(int i = 0; i < S.length(); i++){
+            char startChar = S.charAt(i);
+            Queue<String> q = m.get(startChar);
+            int size = q.size();
+            for(int k = 0; k < size; k++){
+                //get first word from queue
+                String st = q.poll();
+                //remove first character i.e matching with map key
+                // compare remaining string if it's become empty then increment count by 1 i.e one substr matches  
+                if(st.substring(1).length() == 0){
+                    cnt++;
+                }else{
+                    // add the remaining substring in first character of remaining substring in map
+                    if(m.containsKey(st.charAt(1))){
+                        m.get(st.charAt(1)).add(st.substring(1));
+                    }
+                }
+            }
+        }
+        return cnt;
+    }
+}
