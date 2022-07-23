@@ -99,7 +99,7 @@ class NumArray {
     // TC : O(logn)
     private int sumRangeHelper(SegmentTree root, int start, int end){
         // found node that matches your search
-        if(root == null){
+        if(root == null || start > end){
             return 0;
         }
         if(root.start == start && root.end == end){
