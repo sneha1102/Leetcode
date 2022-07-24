@@ -1,0 +1,137 @@
+Question:-
+
+Design a stack-like data structure to push elements to the stack and pop the most frequent element from the stack.
+
+Implement the FreqStack class:
+
+    FreqStack() constructs an empty frequency stack.
+    void push(int val) pushes an integer val onto the top of the stack.
+    int pop() removes and returns the most frequent element in the stack.
+        If there is a tie for the most frequent element, the element closest to the stack's top is removed and returned.
+
+ 
+
+Example 1:
+
+Input
+["FreqStack", "push", "push", "push", "push", "push", "push", "pop", "pop", "pop", "pop"]
+[[], [5], [7], [5], [7], [4], [5], [], [], [], []]
+Output
+[null, null, null, null, null, null, null, 5, 7, 5, 4]
+
+Solution:-
+Approach 1:- We will use one map to store the freq of element.
+One map <integer, Stack<Integer> to store the freq and their correcponding element in the stack.
+
+Code:-
+
+class FreqStack {
+    Map<Integer, Integer> freqMap;
+    Map<Integer, Stack<Integer>> freqStack;
+    int maxFreq;
+    
+    public FreqStack() {
+        freqMap = new HashMap<>();
+        freqStack = new HashMap<>();
+        maxFreq = 0;
+    }
+    
+    // increement value in freqmap
+    // update max freq
+    // add value in freqstack
+    public void push(int val) {
+        int freq = freqMap.getOrDefault(val, 0) + 1;
+        freqMap.put(val, freq);
+        if(freq > maxFreq){
+            maxFreq = freq;
+        }
+        freqStack.computeIfAbsent(freq, f -> new Stack<>()).push(val);
+    }
+    
+    // return and remove the top of maxfreq
+    // if stack becomes empty, decreement maxfreq
+    // update freq map
+    public int pop() {
+        Stack<Integer> s = freqStack.get(maxFreq);
+        int top = s.pop();
+        if(s.isEmpty()){
+            maxFreq--;
+        }
+        freqMap.put(top, freqMap.get(top) - 1);
+        return top;
+    }
+}
+
+/**
+ * Your FreqStack object will be instantiated and called as such:
+ * FreqStack obj = new FreqStack();
+ * obj.push(val);
+ * int param_2 = obj.pop();
+ */
+
+TC - O(1) for push and pop operation
+SC - O(n) 
+
+Approach 2:-
+Here instaed of map we will use ArrayList<ArrayList<Integer>> to store freq and their correpsonding element.
+
+Code:-
+
+class FreqStack {
+    Map<Integer, Integer> freqMap;
+    // Map<Integer, Stack<Integer>> freqStack;
+    ArrayList<ArrayList<Integer>> freqStack;
+    int maxFreq;
+    
+    public FreqStack() {
+        freqMap = new HashMap<>();
+        // freqStack = new HashMap<>();
+        freqStack = new ArrayList<>();
+        freqStack.add(new ArrayList<Integer>());
+        maxFreq = 0;
+    }
+    
+    // increement value in freqmap
+    // update max freq
+    // add value in freqstack
+    public void push(int val) {
+        int freq = freqMap.getOrDefault(val, 0) + 1;
+        freqMap.put(val, freq);
+        if(freq > maxFreq){
+            maxFreq = freq;
+        }
+        // freqStack.computeIfAbsent(freq, f -> new Stack<>()).push(val);
+        if(freqStack.size() <= freq){
+            freqStack.add(new ArrayList<Integer>());
+        }
+        freqStack.get(freq).add(val);
+    }
+    
+    // return and remove the top of maxfreq
+    // if stack becomes empty, decreement maxfreq
+    // update freq map
+    public int pop() {
+        // Stack<Integer> s = freqStack.get(maxFreq);
+        //int top = s.pop();
+
+        ArrayList<Integer> s = freqStack.get(maxFreq);
+        int top = s.remove(s.size() - 1);
+        
+        if(s.isEmpty()){
+            maxFreq--;
+        }
+        
+        freqMap.put(top, freqMap.get(top) - 1);
+        return top;
+    }
+}
+
+/**
+ * Your FreqStack object will be instantiated and called as such:
+ * FreqStack obj = new FreqStack();
+ * obj.push(val);
+ * int param_2 = obj.pop();
+ */
+ 
+ TC - O(1) for push and pop operation
+ SC - O(n)
