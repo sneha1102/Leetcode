@@ -1,0 +1,119 @@
+Question:-
+
+Given the root of a binary tree, flatten the tree into a "linked list":
+
+    The "linked list" should use the same TreeNode class where the right child pointer points to the next node in the list and the left child pointer is always null.
+    The "linked list" should be in the same order as a pre-order traversal of the binary tree.
+
+Example 1:
+Input: root = [1,2,5,3,4,null,6]
+Output: [1,null,2,null,3,null,4,null,5,null,6]
+
+Example 2:
+
+Input: root = []
+Output: []
+
+Example 3:
+
+Input: root = [0]
+Output: [0]
+
+Solution:-
+
+Approach 1:-(Extra space required)
+We will use pre-order traversal of the binary tree using stack.
+Code:-
+
+class Solution{
+public static Node flatten(Node A)
+{
+    Stack<Node> st = new Stack<>();
+    Node ans = A;
+    while (A != null || st.size() != 0)
+    {
+        if (A.right != null)
+        {
+            st.push(A.right);
+        }
+ 
+        // Make the right left and left null
+        A.right = A.left;
+        A.left = null;
+ 
+        if (A.right == null && st.size() != 0)
+        {
+            A.right = st.peek();
+            st.pop();
+        }
+         A = A.right;
+    }
+    return ans;
+}
+
+}
+
+TC - O(N)
+SC - O(log N)
+
+Approach 2: (Without extra space)
+We will Recursively look for the node with no grandchildren
+And both left and right child in the left sub-tree. 
+Then store node->right in temp and make node->right=node->left. 
+Insert temp in first node NULL on right of node by node=node->right. 
+Repeat until it is converted to linked list. 
+
+       1                               1                            1
+    2      5              ->       2        5              ->           2
+  3   4       6                      3         6                            3
+                                        4                                      4
+Code:-                                                                            5
+                                                                                     6
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public void flatten(TreeNode root) {
+        if(root == null){
+            return;
+        }
+        if(root.left == null && root.right == null){
+            return;
+        }
+        if(root.left != null){
+            // Move left recursively
+            flatten(root.left);
+            
+            // Store the node.right in Node named temp
+            TreeNode temp = root.right;
+            root.right = root.left;
+            root.left = null;
+            
+            // Find the position to insert the stored value
+            TreeNode cur = root.right;
+            while(cur.right != null){
+                cur = cur.right;
+            }
+            
+             // Insert the stored value
+            cur.right = temp;
+        }
+         // Insert the stored value
+        flatten(root.right);
+    }
+    
+}
+
+
