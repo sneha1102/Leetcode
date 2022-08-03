@@ -1,0 +1,81 @@
+Question:-
+You are implementing a program to use as your calendar. We can add a new event if adding the event will not cause a double booking.
+
+A double booking happens when two events have some non-empty intersection (i.e., some moment is common to both events.).
+
+The event can be represented as a pair of integers start and end that represents a booking on the half-open interval [start, end), the range of real numbers x such that start <= x < end.
+
+Implement the MyCalendar class:
+
+    MyCalendar() Initializes the calendar object.
+    boolean book(int start, int end) Returns true if the event can be added to the calendar successfully without causing a double booking. Otherwise, return false and do not add the event to the calendar.
+
+ 
+
+Example 1:
+
+Input
+["MyCalendar", "book", "book", "book"]
+[[], [10, 20], [15, 25], [20, 30]]
+Output
+[null, true, false, true]
+
+Explanation
+MyCalendar myCalendar = new MyCalendar();
+myCalendar.book(10, 20); // return True
+myCalendar.book(15, 25); // return False, It can not be booked because time 15 is already booked by another event.
+myCalendar.book(20, 30); // return True, The event can be booked, as the first event takes every time less than 20, but not including 20.
+
+Solution:-
+
+We can use binary search apporach, that in this case can be applied via binary search tree.
+let's assume this is our tree:
+[5, 10], [12, 16], [20, 25], [40, 50]
+we trying to add [17, 19]
+
+step1 - we found smallest start time = [12, 16], and greatest start time is [20, 25].
+step2 - checking if end of [12,16] is less eq to 17 - that is true
+step 3 - checking if 20 is greater eq to 19 - that's true.
+step 4 - [17, 19] can be added
+
+example 2, same tree, adding pair [14, 19]
+step1 - finding [12, 16] and [20, 25]
+step 2 - checking if 16 less or eq to 14 - it's not true thus return false
+
+we need to handle few special cases - when passed pair is less than the smallest one or greater than highest one. For that we need to check if any of two keys does not exist meaning our search return null.
+
+We can implement all this with TreeMap in Java. It stores keys in sorted order and also values so we can utilize it for end of our intervals. Also it return null in case it cannot find smaller or greater key, which fits or requirements.
+
+Code:-
+
+class MyCalendar {
+
+    TreeMap<Integer, Integer> m;
+    
+    public MyCalendar() {
+        m = new TreeMap<>();
+    }
+    
+    public boolean book(int start, int end) {
+        Integer smallerKey = m.floorKey(start);
+        Integer greaterKey = m.ceilingKey(start);
+        
+        if(smallerKey == null || m.get(smallerKey) <= start){
+            if(greaterKey == null || greaterKey >= end){
+                m.put(start, end);
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+/**
+ * Your MyCalendar object will be instantiated and called as such:
+ * MyCalendar obj = new MyCalendar();
+ * boolean param_1 = obj.book(start,end);
+ */
+
+
+TC - O(nlgn) - lookups are lgn in tree as this is BST, we need to do it for every interval so mutliply by n
+SC - O(n) space - all intervals can be added to the tree
