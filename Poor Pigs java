@@ -32,8 +32,6 @@ Output: 2
 
 Solution:-
 
-This question is based on combinatrics. 
-
 Lets assume that we have p pigs which can give us the accurate result. Now we have
 total Round of test = (timetoTest/TimetoDie) ie. T tests. 
 
