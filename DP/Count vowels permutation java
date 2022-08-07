@@ -1,0 +1,102 @@
+Question:-
+
+
+Solution:-
+Approach 1:- Memoization
+
+class Solution {
+    //map for memoization - to reduce TC
+    private Map<String, Long> m = new HashMap<>();
+    private int MOD = 1000000007;
+    
+    public int countVowelPermutation(int n) {
+        long ans = 0;
+        char[] charSet = new char[]{'a', 'e', 'i', 'o', 'u'};
+        for(char c : charSet){
+            ans = (ans + countVowelPermutationHelper(n - 1, c)) % MOD ;
+        }
+        return (int)ans;
+    }
+    
+    private long countVowelPermutationHelper(int remainingChar, char prevChar){
+        if(remainingChar == 0){
+            return 1;
+        }
+        
+        String key = "" + prevChar + remainingChar;
+        if(m.containsKey(key)){
+            return m.get(key);
+        }
+        
+        long total = 0;
+        
+        switch(prevChar){
+            case 'a': total = countVowelPermutationHelper(remainingChar - 1, 'e') % MOD;
+                break;
+            case 'e': total = (countVowelPermutationHelper(remainingChar - 1, 'a') + countVowelPermutationHelper(remainingChar - 1, 'i')) % MOD;
+                break;
+            case 'i': total = ( countVowelPermutationHelper(remainingChar - 1, 'a') +  countVowelPermutationHelper(remainingChar - 1, 'e') +  countVowelPermutationHelper(remainingChar - 1, 'o') +  countVowelPermutationHelper(remainingChar - 1, 'u')) % MOD;
+                break;
+            case 'o': total =  (countVowelPermutationHelper(remainingChar - 1, 'i') +  countVowelPermutationHelper(remainingChar - 1, 'u')) % MOD;
+                break;
+            case 'u': total =  countVowelPermutationHelper(remainingChar - 1, 'a') % MOD;
+                break;
+        }
+        m.put(key, total);
+        return total;
+
+        
+    }
+}
+
+Approach 2:- DP
+
+    a     e   i   o   u
+ 0  8    18   22  15  5
+ 1  5    8    13  7   2
+ 2  2    5    6   5   1
+ 3  1    2    4   2   1
+ 4  1    1    1   1   1
+
+Code:-
+class Solution {
+    private int MOD = 1000000007;
+
+    public int countVowelPermutation(int n) {
+        int ans = 0;
+        int dp[][] = new int[n][5];
+        for(int i = 0; i < 5; i++){
+            dp[n-1][i] = 1;
+        }
+        
+        for(int i = n - 2; i >= 0; i--){
+            for(int j = 0; j < 5; j++){
+                if(j == 0){ // j = 'a'
+                    dp[i][0] = (dp[i + 1][1]) % MOD;
+                }
+                else if(j == 1){ // 'e'
+                    dp[i][1] = (dp[i + 1][0] + dp[i + 1][2]) % MOD; 
+                }
+                else if(j == 2){ // 'i'
+                    dp[i][2] = (dp[i + 1][0] + dp[i][2]) % MOD;
+                    dp[i][2] = (dp[i + 1][1] + dp[i][2]) % MOD;
+                    dp[i][2] = (dp[i + 1][3] + dp[i][2]) % MOD;
+                    dp[i][2] = (dp[i + 1][4] + dp[i][2]) % MOD;
+                }
+                else if(j == 3){//'o'
+                    dp[i][3] = (dp[i + 1][2] + dp[i + 1][4]) % MOD;
+                }
+                else if( j == 4){ // 'u'
+                    dp[i][4] = (dp[i + 1][0]) % MOD;
+                }
+            }
+        }
+        for(int i = 0; i < 5; i++){
+            ans = (ans + dp[0][i]) % MOD;
+        }
+        return ans;
+    }
+}
+    TC:- O(N * 5)
+    SC:- O(N * 5)
+    Note:- We can easily optimise the space to O(1)
