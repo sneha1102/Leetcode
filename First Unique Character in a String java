@@ -19,6 +19,20 @@ Input: s = "aabb"
 Output: -1
 
 Solution:-
+Approach 1:-
+public int firstUniqChar(String s) {
+        Map<Character, Integer> characterMap = new HashMap<>();
+        for (char c : s.toCharArray()) {
+            characterMap.put(c, characterMap.getOrDefault(c, 0) + 1);
+        }
+        for (int i = 0; i < s.length(); i++) {
+            if (characterMap.get(s.charAt(i)) == 1)
+                return i;
+        }
+        return -1;
+    }
+
+Approach 2:-
 class Solution {
     public int firstUniqChar(String s) {
         int ans = Integer.MAX_VALUE;
