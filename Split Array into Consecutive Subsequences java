@@ -1,0 +1,83 @@
+Question:-
+You are given an integer array nums that is sorted in non-decreasing order.
+
+Determine if it is possible to split nums into one or more subsequences such that both of the following conditions are true:
+
+    Each subsequence is a consecutive increasing sequence (i.e. each integer is exactly one more than the previous integer).
+    All subsequences have a length of 3 or more.
+
+Return true if you can split nums according to the above conditions, or false otherwise.
+
+A subsequence of an array is a new array that is formed from the original array by deleting some (can be none) of the elements without disturbing the relative positions of the remaining elements. (i.e., [1,3,5] is a subsequence of [1,2,3,4,5] while [1,3,2] is not).
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3,3,4,5]
+Output: true
+Explanation: nums can be split into the following subsequences:
+[1,2,3,3,4,5] --> 1, 2, 3
+[1,2,3,3,4,5] --> 3, 4, 5
+
+Example 2:
+
+Input: nums = [1,2,3,3,4,4,5,5]
+Output: true
+Explanation: nums can be split into the following subsequences:
+[1,2,3,3,4,4,5,5] --> 1, 2, 3, 4, 5
+[1,2,3,3,4,4,5,5] --> 3, 4, 5
+
+Example 3:
+
+Input: nums = [1,2,3,4,4,5]
+Output: false
+
+Solution:-
+
+class Solution {
+    public boolean isPossible(int[] nums) {
+        // store first and last element of subsequences i. e[1, 2, 3] -> [1, 3]
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> {
+            // if last element of a & b is same then sort it on the basis of length
+            if(a[1] == b[1]){
+                int lengthOfA = a[1] - a[0] + 1;
+                int lengthOfB = b[1] - b[0] + 1;
+                return lengthOfA - lengthOfB;
+            }
+            return a[1] - b[1];
+        });
+        
+        for(int i : nums){
+            // handle case like [1, 2, 3] [3, 4] i. e pq has [1, 3] [3, 4]
+            // suppose next we have insert 5 so here we will pop the previous subsequence and check the length and then push the 5 in next subsequences
+            while(pq.size() > 0 && pq.peek()[1] + 1 < i){
+                int range[] = pq.remove();
+                // check length that should not be less than 3
+                int len = range[1] - range[0] + 1;
+                if(len < 3){
+                    return false;
+                }
+            }
+            
+            // if it is first element or pq last element and current element is same then insert new subsequence
+            if(pq.size() == 0 || pq.peek()[1] == i){
+                pq.add(new int[]{i, i});
+            }else{
+                // insert in existing subsequences
+                int prevRange[] = pq.remove();
+                pq.add(new int[]{prevRange[0], i});
+            }
+        } 
+            // handle remaining subsequences
+            while(pq.size() > 0){
+                int range[] = pq.remove();
+                // check length that should not be less than 3
+                int len = range[1] - range[0] + 1;
+                if(len < 3){
+                    return false;
+                }
+            }
+        return true;
+    }
+}
