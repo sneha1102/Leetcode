@@ -1,0 +1,51 @@
+Question:-
+
+Given an integer array nums that may contain duplicates, return all possible subsets (the power set).
+
+The solution set must not contain duplicate subsets. Return the solution in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,2]
+Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
+
+Example 2:
+
+Input: nums = [0]
+Output: [[],[0]]
+
+
+Solution:-
+
+class Solution {
+    public void subsetSum2(int ind, List<List<Integer>> res, List<Integer> ds, int[] nums){
+        res.add(new ArrayList<>(ds));
+        
+        // create subset of all possible size i.e o, 1, 2, ...
+        for(int i = ind; i < nums.length; i++){
+            // if current index is not the first index of that specific size 
+            // and if current element is equal to prev one, skip that element as we have avoid taking duplicates
+            if(i != ind && nums[i] == nums[i - 1]){
+                continue;
+            }
+            // add element in ds
+            ds.add(nums[i]);
+            subsetSum2(i + 1, res, ds, nums);
+            //remove element after recursion call
+            ds.remove(ds.size() - 1);
+        }
+    }
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> ds = new ArrayList<>();
+        subsetSum2(0, res, ds, nums);
+        return res;
+    }
+}
+
+TC : O( 2^n *(k log (x) )). 2^n  for generating every subset and k* log( x)  to insert every combination of average length k in a set of size x. After this, we have to convert the set of combinations back into a list of list /vector of vectors which takes more time.
+
+SC :  O(2^n * k) to store every subset of average length k. Since we are initially using a set to store the answer another O(2^n *k) is also used
