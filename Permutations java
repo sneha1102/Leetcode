@@ -1,0 +1,90 @@
+Question:-
+
+Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3]
+Output: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+
+Example 2:
+
+Input: nums = [0,1]
+Output: [[0,1],[1,0]]
+
+Example 3:
+
+Input: nums = [1]
+Output: [[1]]
+
+Approach - 1 :- use of extra ds and map/freq array
+
+public class Main {
+    public void recurPermutation(int ind, List<List<Integer>> res, List<Integer> ds, int[] nums, boolean[] freq){
+        if(ds.size() == nums.length){
+            res.add(new ArrayList<>(ds));
+            return;
+        }
+        // check for each possible element
+        for(int i = 0; i < nums.length; i++){
+            if(!freq[i]){    
+                freq[i] = true;
+                // add element in ds
+                ds.add(nums[i]);
+                recurPermutation(i + 1, res, ds, nums, freq);
+                //remove element after recursion call
+                ds.remove(ds.size() - 1);
+                freq[i] = false;
+            }
+        }
+    }
+    
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        List<Integer> ds = new ArrayList<>();
+        boolean freq[] = new boolean[nums.length];
+        recurPermutation(0, res, ds, nums, freq);
+        return res;
+    }   
+}
+
+TC - O(N! * N)
+SC - O(2N)
+
+Approach - 2 :- Swapping technique
+
+class Solution {
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> res = new ArrayList<>();
+        recurPermutation(0, res, nums);
+        return res;
+    }
+    
+    public void swap(int[] nums, int i, int j){
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+    
+    public void recurPermutation(int ind, List<List<Integer>> res, int[] nums){
+        if(ind == nums.length){
+            List<Integer> ds = new ArrayList<>();
+            for(int i = 0; i < nums.length; i++){
+                ds.add(nums[i]);
+            }
+            res.add(new ArrayList<>(ds));
+            return;
+        }
+        
+        for(int i = ind; i < nums.length; i++){
+            swap(nums, i, ind);
+            recurPermutation(ind + 1, res, nums);
+            swap(nums, i, ind);       
+        }
+    }
+}
+
+TC - O(N! * N)
+SC - O(1)
