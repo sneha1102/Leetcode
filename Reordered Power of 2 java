@@ -1,0 +1,68 @@
+Question:-
+
+You are given an integer n. We reorder the digits in any order (including the original order) such that the leading digit is not zero.
+
+Return true if and only if we can do this so that the resulting number is a power of two.
+
+ 
+
+Example 1:
+
+Input: n = 1
+Output: true
+
+Example 2:
+
+Input: n = 10
+Output: false
+
+
+Constraints:
+
+    1 <= n <= 109
+
+
+
+Solution:-
+
+class Solution {
+    public boolean reorderedPowerOf2(int n) {
+        int inputDigitFreq[] = freqCount(n);
+        // find power of 2 till 2 ^ 30
+        for(int i = 0;  i < 31; i++){
+            int powerOfTwo =  (int)Math.pow(2, i);
+            // create freq array of power of two
+            // 2  index-  0 1 2 3 4 5 6 7 8 9
+            // freq array-    1
+            // Similarly for 64
+            //index - 0 1 2 3 4 5 6 7 8 9
+            // freq array-    1   1
+            int[] powrOfTwoFreq = freqCount(powerOfTwo);
+            if(compareFreqArray(powrOfTwoFreq, inputDigitFreq)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    private boolean compareFreqArray(int[] freq1, int[] freq2){
+        for(int i = 0; i < 10; i++){
+            if(freq1[i] != freq2[i]){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    // 46 -> freq
+    // index - 0 1 2 3 4 5 6 7 8 9
+    // freq array-     1   1
+    private int[] freqCount(int n){
+        int freq[] = new int[10]; // 0 to 9 freq count of current n
+        while(n > 0){
+            freq[n % 10]++;
+            n /= 10;
+        }
+        return freq;
+    }
+}
