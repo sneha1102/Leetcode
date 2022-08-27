@@ -1,0 +1,38 @@
+Question:-
+Given an array of n integer numbers, find maximum sum of sub array which has sum less than or equal to K.
+
+Solution:
+
+class Solution {
+    long findMaxSubarraySum(long arr[], int n, int k) {
+        long right = 0;
+        //Treeset create bst
+        TreeSet<Long> bst = new TreeSet<>();
+        bst.add(0L);
+        long ans = Long.MIN_VALUE;
+        for (int i = 0; i < n; ++i) {
+        //prefix sum
+            right += arr[i];
+            // next element which is greater or equal than right - k
+            Long left = bst.ceiling(right - k);
+            if (left != null) {
+            // right - left <= k
+                ans = Math.max(ans, right - left);
+            }
+            bst.add(right);
+        }
+        if (ans == Long.MIN_VALUE) 
+        return 0L; // not found!
+        return ans;
+    }
+
+    public static void main(String[] args) {
+        long[] arr = new long[]{8,17,7,18,11,12,17,8,8,19,13,16,14,2,8,3,17,5,3,16,3,18,6,6,13} ;
+        long ans = new Solution().findMaxSubarraySum(arr, 25, 4);
+        System.out.println(ans);
+    }
+}
+
+
+    TC : O(N log N)
+    SC : O(N)
