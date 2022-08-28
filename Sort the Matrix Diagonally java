@@ -1,0 +1,118 @@
+Question:-
+A matrix diagonal is a diagonal line of cells starting from some cell in either the topmost row or leftmost column and going in the bottom-right direction until reaching the matrix's end. For example, the matrix diagonal starting from mat[2][0], where mat is a 6 x 3 matrix, includes cells mat[2][0], mat[3][1], and mat[4][2].
+
+Given an m x n matrix mat of integers, sort each matrix diagonal in ascending order and return the resulting matrix.
+
+Example 1:
+
+Input: mat = [[3,3,1,1],[2,2,1,2],[1,1,1,2]]
+Output: [[1,1,1,1],[1,2,2,2],[1,2,3,3]]
+
+Example 2:
+
+Input: mat = [[11,25,66,1,69,7],[23,55,17,45,15,52],[75,31,36,44,58,8],[22,27,33,25,68,4],[84,28,14,11,5,50]]
+Output: [[5,17,4,1,52,7],[11,11,25,45,8,69],[14,23,25,44,58,15],[22,27,31,36,50,66],[84,28,75,33,55,68]]
+
+
+Solution:-
+Approach - 1 :- use inbuilt sort method
+
+class Solution {
+    // Approach 1
+    public int[][] diagonalSort(int[][] mat) {
+        int m = mat.length;
+        int n = mat[0].length;
+        
+        //row = 0
+        for(int c = 0; c < n; c++){
+            sort(mat, 0, c, m, n);
+        }
+        
+        //col = 0
+        for(int r = 1; r < m; r++){
+            sort(mat, r, 0, m, n);
+        }
+        
+        return mat;
+    }
+    void sort(int[][] mat, int r, int c, int m, int n){
+        List<Integer> l = new ArrayList<>();
+        int row = r;
+        int col = c;
+        
+        // store diagonal elements in ds
+        while(row < m && col < n){
+            l.add(mat[row][col]);
+            row++;
+            col++;
+        }
+        
+        // sort 
+        Collections.sort(l);
+        
+        row = r;
+        col = c;
+        int ind = 0;
+        
+        // store back to mat
+        while(row < m && col < n){
+            mat[row][col] = l.get(ind++);
+            row++;
+            col++;
+        }
+    }
+}
+
+TC - O((M + N)) * K Log K), where k = min(M, N)
+SC - O(K)
+
+Approach - 2:- Use count sort for sorting
+
+class Solution{
+    public int[][] diagonalSort(int[][] mat) {
+        int m = mat.length;
+        int n = mat[0].length;
+        
+        //row = 0
+        for(int c = 0; c < n; c++){
+            sort(mat, 0, c, m, n);
+        }
+        
+        //col = 0
+        for(int r = 1; r < m; r++){
+            sort(mat, r, 0, m, n);
+        }
+        
+        return mat;
+    }
+    void sort(int[][] mat, int r, int c, int m, int n){
+        int row = r;
+        int col = c;
+        int[] values = new int[101];
+        
+        // store diagonal elements in ds
+        while(row < m && col < n){
+            values[mat[row][col]]++;
+            row++;
+            col++;
+        }
+                
+        row = r;
+        col = c;
+
+        
+        // sort and store back to mat
+        for(int i = 0; i < 101; i++){
+            int count = values[i];
+            while(count-- > 0){
+                mat[row][col] = i;
+                row++;
+                col++;
+        }
+        }
+    }
+        
+}
+
+TC - O((M + N)) * K)
+SC - O(1)
