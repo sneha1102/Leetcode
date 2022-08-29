@@ -1,0 +1,74 @@
+Question:-
+Given an m x n 2D binary grid grid which represents a map of '1's (land) and '0's (water), return the number of islands.
+
+An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+ 
+
+Example 1:
+
+Input: grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+Output: 1
+
+Example 2:
+
+Input: grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+Output: 3
+
+ 
+
+Constraints:
+
+    m == grid.length
+    n == grid[i].length
+    1 <= m, n <= 300
+    grid[i][j] is '0' or '1'.
+
+
+Solution:-
+
+class Solution {
+    //TC - O(N)
+    //SC - O(M * N) * Space required for recursion call
+    public int numIslands(char[][] grid) {
+        int row = grid.length;
+        int col = grid[0].length;
+        int noOfIsland = 0;
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < col ; j++){
+                // if land then call dfs for all 4 direction and convert all connected land to water and
+                // increement island count as one island has been found in that case
+                if(grid[i][j] == '1'){
+                    clearLand(i, j, grid);
+                    noOfIsland += 1;
+                }
+            }
+        }
+        return noOfIsland;
+    }
+    
+    private void clearLand(int r, int c, char[][] grid){
+        
+        if(r < 0 || c < 0 || r >= grid.length || c >= grid[0].length || grid[r][c] == '0'){
+            return;
+        }
+        // change land to water
+        grid[r][c] = '0';
+        // call dfs for all 4 direction
+        clearLand(r + 1, c, grid);
+        clearLand(r - 1, c, grid);
+        clearLand(r, c + 1, grid);
+        clearLand(r, c - 1, grid);
+        return;
+    }
+}
