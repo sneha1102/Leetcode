@@ -19,13 +19,11 @@ Output: [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
 Solution:-
 class Solution {
     public void rotate(int[][] matrix) {
-        int row = matrix.length;
-        int col = matrix[0].length;
-        
+        int size = matrix.length;        
         
         // transpose i.e now 1st row -> 1st col, 2nd row, -> 2nd col so on
-        for(int i = 0; i < row; i++){
-            for(int j = i; j < col; j++){
+        for(int i = 0; i < size; i++){
+            for(int j = i; j < size; j++){
                 int temp = matrix[j][i];
                 matrix[j][i] = matrix[i][j];
                 matrix[i][j] = temp;
@@ -34,11 +32,11 @@ class Solution {
         
         
         // reverse column i.e 1st col -> last col, 2nd col -> 2nd last col so on
-        for(int i = 0; i < row; i++){
-            for(int j = 0; j < col / 2; j++){
+        for(int i = 0; i < size; i++){
+            for(int j = 0; j < size / 2; j++){
                 int temp = matrix[i][j];
-                matrix[i][j] = matrix[i][col - 1 - j];
-                matrix[i][col - 1 - j] = temp;
+                matrix[i][j] = matrix[i][size - 1 - j];
+                matrix[i][size - 1 - j] = temp;
             }
         }
     }
