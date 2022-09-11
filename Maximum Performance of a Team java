@@ -1,0 +1,98 @@
+Question:-
+You are given two integers n and k and two integer arrays speed and efficiency both of length n. There are n engineers numbered from 1 to n. speed[i] and efficiency[i] represent the speed and efficiency of the ith engineer respectively.
+
+Choose at most k different engineers out of the n engineers to form a team with the maximum performance.
+
+The performance of a team is the sum of their engineers' speeds multiplied by the minimum efficiency among their engineers.
+
+Return the maximum performance of this team. Since the answer can be a huge number, return it modulo 109 + 7.
+
+ 
+
+Example 1:
+
+Input: n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 2
+Output: 60
+Explanation: 
+We have the maximum performance of the team by selecting engineer 2 (with speed=10 and efficiency=4) and engineer 5 (with speed=5 and efficiency=7). That is, performance = (10 + 5) * min(4, 7) = 60.
+
+Example 2:
+
+Input: n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 3
+Output: 68
+Explanation:
+This is the same example as the first but k = 3. We can select engineer 1, engineer 2 and engineer 5 to get the maximum performance of the team. That is, performance = (2 + 10 + 5) * min(5, 4, 7) = 68.
+
+Example 3:
+
+Input: n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 4
+Output: 72
+
+ 
+
+Constraints:
+
+    1 <= k <= n <= 105
+    speed.length == n
+    efficiency.length == n
+    1 <= speed[i] <= 105
+    1 <= efficiency[i] <= 108
+
+
+Solution:-
+
+class Solution {
+    class Engineer{
+        private int speed;
+        private int efficiency;
+        
+        public Engineer(int s, int e){
+            this.speed = s;
+            this.efficiency = e;
+        }
+    }
+    public int maxPerformance(int n, int[] speed, int[] efficiency, int k) {
+        List<Engineer> engineers = new ArrayList<>();
+        for(int i = 0; i < n; i++){
+            engineers.add(new Engineer(speed[i], efficiency[i]));
+        }
+        
+        //sort the engineers list by their efficiency in descending order
+        engineers.sort((a, b) -> b.efficiency - a.efficiency);
+        
+        
+        //will keep slowest members at the top, fastest ones stay in the team longest
+        PriorityQueue<Engineer> currentTeam = new PriorityQueue<>((a, b) -> a.speed - b.speed);
+        long teamSpeed = 0;
+        long maxPerformance = 0;
+        
+        for(Engineer newEng: engineers){
+            //handle scenario when current team == k, we need to pull out the eng with slowest speed
+            if(currentTeam.size() == k){
+                 //we must evict the slowest engineer from out current team
+                Engineer slowSpeedEng = currentTeam.poll();
+                
+                //now we must remove the slow eng speed from our total speed
+                teamSpeed -= slowSpeedEng.speed;
+            }
+             //add the new eng to the team
+            currentTeam.add(newEng);
+            
+            //pickup the new engineer speed and add it to the current teams speed
+            teamSpeed += newEng.speed;
+            
+            // Calculate the performance of team after adding new eng
+            // Minimum would be new eng efficiency as we pulled out the eng with
+            //slow speed (priority queue  maintain engineer eng based on their speed i.e slowest one
+            // at the top)
+            long performanceWithNewEng = teamSpeed * (long) newEng.efficiency;
+            
+            //Update the max performance
+            maxPerformance = Math.max(maxPerformance, performanceWithNewEng);
+        }
+        return (int) (maxPerformance % 1000000007);
+    }
+}
+
+TC - O(N log N)
+SC - O(N)
