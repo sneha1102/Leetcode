@@ -1,0 +1,139 @@
+Question:-
+
+You have n dice and each die has k faces numbered from 1 to k.
+
+Given three integers n, k, and target, return the number of possible ways (out of the kn total ways) to roll the dice so the sum of the face-up numbers equals target. Since the answer may be too large, return it modulo 109 + 7.
+
+ 
+
+Example 1:
+
+Input: n = 1, k = 6, target = 3
+Output: 1
+Explanation: You throw one die with 6 faces.
+There is only one way to get a sum of 3.
+
+Example 2:
+
+Input: n = 2, k = 6, target = 7
+Output: 6
+Explanation: You throw two dice, each with 6 faces.
+There are 6 ways to get a sum of 7: 1+6, 2+5, 3+4, 4+3, 5+2, 6+1.
+
+Example 3:
+
+Input: n = 30, k = 30, target = 500
+Output: 222616187
+Explanation: The answer must be returned modulo 109 + 7.
+
+ 
+
+Constraints:
+
+    1 <= n, k <= 30
+    1 <= target <= 1000
+
+Solution:-
+
+class Solution {
+     private final long MOD = (long)1e9 + 7;
+    /*
+    // Approach - 1, recursion
+    public int numRollsToTarget(int n, int k, int target) {
+        return solve(n, k, target);
+    }
+    private int solve(int dice, int face, int target){
+        if(target == 0 && dice == 0)
+            return 1;
+        if(target == 0 && dice != 0)
+            return 0;
+        if(target != 0 && dice == 0)
+            return 0;
+        if(target < 0)
+            return 0;
+        
+        int ans = 0;
+        for(int i = 1; i <= face; i++){
+            ans += solve(dice - 1, face, target - i);
+        }
+        return ans;
+    }
+    */
+    /*
+    // approach - 2, top down dp
+   public int numRollsToTarget(int n, int k, int target) {
+        Long dp[][] = new Long[n + 1][target + 1];
+        return (int)solve(n, k, target, dp);
+    }
+    private long solve(int dice, int face, int target, Long[][] dp){
+        if(target < 0)
+            return 0;
+        if(dice == 0){
+            return target == 0 ? 1 : 0;
+        }
+        if(dp[dice][target] != null)
+            return dp[dice][target];
+        long ans = 0;
+        for(int i = 1; i <= face; i++){
+            ans = (ans + solve(dice - 1, face, target - i, dp)) % MOD;
+        }
+        return dp[dice][target] = ans;
+    }
+    */
+    
+    //approach - 3, bottom up
+    // tc - O(N * K * target), sc - O(N * Target)
+    public int numRollsToTarget(int n, int k, int target) {
+        Long dp[][] = new Long[n + 1][target + 1];
+        for(int i = 0; i <= n; i++){
+            for(int j = 0; j <= target; j++){
+                dp[i][j] = (long)0;
+            }
+        }
+        return (int)solve(n, k, target, dp);
+    }
+    private long solve(int dice, int face, int target, Long[][] dp){
+        // after analyzing the base case
+        dp[0][0] = (long)1;
+        
+        for(int d = 1; d <= dice; d++){
+            for(int t = 1; t <= target; t++){
+                long ans = 0;
+                for(int i = 1; i <= face; i++){
+                    if(t - i >= 0)
+                        ans += dp[d - 1][t - i];
+                }
+                dp[d][t] = ans % MOD;
+            }
+        }
+        return dp[dice][target];
+    }
+  
+ /*   
+    // approach - 4, bottom up, space optimized
+    // sc - O(Target)
+  public int numRollsToTarget(int n, int k, int target) {
+        return solve(n, k, target);
+    }
+    private int solve(int dice, int face, int target){
+        int prevDice[] = new int[target + 1];
+
+        // after analyzing the base case
+        prevDice[0] = 1;
+        
+        for(int d = 1; d <= dice; d++){
+            int currDice[] = new int[target + 1];
+            for(int t = 1; t <= target; t++){
+                long ans = 0;
+                for(int i = 1; i <= face; i++){
+                    if(t - i >= 0)
+                        ans += (prevDice[t - i] % MOD);
+                }
+                currDice[t] = (int)(ans % MOD);
+            }
+            prevDice = currDice;
+        }
+        return prevDice[target];
+    }  
+    */
+}
