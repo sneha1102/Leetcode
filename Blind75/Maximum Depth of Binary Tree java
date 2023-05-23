@@ -1,0 +1,73 @@
+Question:-
+
+A binary tree's maximum depth is the number of nodes along the longest path from the root node down to the farthest leaf node.
+
+ 
+
+Example 1:
+
+Input: root = [3,9,20,null,null,15,7]
+Output: 3
+
+Example 2:
+
+Input: root = [1,null,2]
+Output: 2
+
+
+Solution:-
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    // public int maxDepth(TreeNode root) {
+    //     // Base Condition
+    //     if(root == null) return 0;
+    //     // Hypothesis
+    //     int left = maxDepth(root.left);
+    //     int right = maxDepth(root.right);
+    //     // Induction
+    //     return Math.max(left, right) + 1;
+    // }
+    public int maxDepth(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<>();
+        int d = 0;
+        if(root == null){
+            return d;
+        }
+        q.add(root);
+        q.add(null);
+        while(!q.isEmpty()){
+            TreeNode t = q.remove();
+            if(t == null){
+                d++;
+            }
+            
+            if(t != null){
+                if(t.left != null){
+                    q.add(t.left);
+                }
+                if(t.right != null){
+                    q.add(t.right);
+                    
+                }
+            }else if(!q.isEmpty()){
+                  q.add(null);
+            }
+        }
+        return d;
+    }
+}
