@@ -1,0 +1,67 @@
+Given the root of a binary tree and an integer targetSum, return the number of paths where the sum of the values along the path equals targetSum.
+
+The path does not need to start or end at the root or a leaf, but it must go downwards (i.e., traveling only from parent nodes to child nodes).
+
+ 
+
+Example 1:
+
+Input: root = [10,5,-3,3,2,null,11,3,-2,null,1], targetSum = 8
+Output: 3
+Explanation: The paths that sum to 8 are shown.
+
+Example 2:
+
+Input: root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+Output: 3
+
+Solution:-
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int count = 0;
+    public int pathSum(TreeNode root, int targetSum) {
+    // Approach - 1 TC- O(N^2)
+    //     if(root == null) return 0;
+    //     return helper(root,targetSum) + pathSum(root.left, targetSum) + pathSum(root.right, targetSum);
+    // }
+    // private int helper(TreeNode root, long sum){
+    //     if(root == null) return 0;
+    //     return(sum - root.val == 0 ? 1:0) + helper(root.left, sum - root.val) + helper(root.right, sum - root.val);
+
+    // Approach - 2 TC- O(N)
+    HashMap<Long, Long> m = new HashMap<>();
+    m.put(0l, 1l);
+    long sum = 0;
+    findPath(root, sum, m, targetSum);
+    return count;
+    }
+
+    private void findPath(TreeNode root, long sum, HashMap<Long, Long> m, int target){
+        if(root == null){
+            return;
+        }
+        sum += root.val;
+        if(m.containsKey(sum - target)){
+            count += m.get(sum - target);
+        }
+         m.put(sum, m.getOrDefault(sum, 0l) + 1);
+         findPath(root.left, sum, m, target);
+         findPath(root.right, sum, m, target);
+         m.put(sum, m.get(sum) - 1);
+    }
+}
