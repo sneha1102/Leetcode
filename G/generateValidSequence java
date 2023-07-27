@@ -1,0 +1,63 @@
+Given a string where each character is a sign ('<', '>', '=') and length of the string is N. You need to insert N+1 positive integers such that the sequence is valid. You are allowed to take positive integers in the range [1, P]. k.
+Examples -
+
+Input: <<<
+Output: 4 (the sequence can be 1 < 2 < 3 < 4)
+Input: <=>
+Output: 2 (the sequence can be 1 < 2 = 2 > 1)
+Input: >><>
+Output: 3 (the sequence can be 3 > 2 > 1 < 2 > 1)
+Input : <>><<<>>=<<<<>
+Output:
+
+Solution:-
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class MyClass {
+
+    public static List<Integer> generateValidSequence(String str, int P) {
+        List<Integer> sequence = new ArrayList<>();
+        sequence.add(1); // Start with the first positive integer as 1
+        int N = str.length();
+
+        for (int i = 0; i < N; i++) {
+            // Apply the rules based on the sign in the string
+            char sign = str.charAt(i);
+            if (sign == '<') {
+                sequence.add(sequence.get(sequence.size() - 1) + 1);
+            } else if (sign == '>') {
+                sequence.add(sequence.get(sequence.size() - 1) - 1);
+            } else if (sign == '=') {
+                sequence.add(sequence.get(sequence.size() - 1));
+            }
+        }
+
+        // If there are remaining numbers to insert, fill them with any positive integers within [1, P]
+        for (int i = sequence.size(); i < N + 1; i++) {
+            sequence.add(sequence.get(sequence.size() - 1) + 1);
+        }
+
+        // Check if the sequence is within the given range [1, P]
+        for (int num : sequence) {
+            if (num > P) {
+                System.out.println("Sequence is not valid as it exceeds the range [1, P].");
+                return null;
+            }
+        }
+
+        return sequence;
+    }
+
+    public static void main(String[] args) {
+        String str = "<<<";
+        int P = 10;
+        List<Integer> result = generateValidSequence(str, P);
+        if (result != null) {
+            System.out.println(result);
+        }
+    }
+}
+
