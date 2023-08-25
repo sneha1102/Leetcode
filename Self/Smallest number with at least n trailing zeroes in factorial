@@ -1,0 +1,82 @@
+Given a number n. The task is to find the smallest number whose factorial contains at least n trailing zeroes.
+Examples : 
+
+Input : n = 1
+Output : 5 
+1!, 2!, 3!, 4! does not contain trailing zero.
+5! = 120, which contains one trailing zero.
+
+Input : n = 6
+Output : 25
+
+Solution:-
+
+class Solution
+{
+    int findNum(int n)
+    {
+        // Complete this function
+        int num = 1;
+        int cnt = 0;
+        
+        while(true){
+            int temp = num;
+            int zeroCount = trailingZeroes(temp);
+            if(zeroCount >= n){
+                return temp;
+            }
+            num++;
+        }
+    }
+    public int trailingZeroes(int n) {
+        
+        int cnt = 0;
+        for(int i = 5; i <= n ; i *= 5){
+            cnt += n / i;
+        }
+        return cnt;
+    }
+    
+}
+
+
+
+Approach 2 - binary search
+
+class Solution
+{
+    int findNum(int n)
+    {
+        // Complete this function
+        
+        if(n == 1){
+            return 5;
+        
+        }
+        
+        int low = 0;
+        int high = 5 * n; // max value which contains n trailing zeroes
+        
+        while(low < high){
+            int mid = (low + high) / 2;
+            
+            if(checkIfContinsNTrailingZeroes(mid, n)){
+                high = mid;
+            }else{
+                low = mid + 1;
+            }
+            
+        }
+        return low;
+        
+    }
+    public boolean checkIfContinsNTrailingZeroes(int mid, int n) {
+        
+        int cnt = 0;
+        for(int i = 5; i <= mid ; i *= 5){
+            cnt += mid / i;
+        }
+        return cnt >= n;
+    }
+    
+}
