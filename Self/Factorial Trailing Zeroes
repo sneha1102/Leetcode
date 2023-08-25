@@ -26,7 +26,7 @@ Solution:-
 class Solution {
     // no of 5's' < no of 2's'
     // no of counts = floor of n/5 + floor of n/25 + floor of n/125 + floor of n/625 .... so on
-    // tc - O(n Log n)
+    // tc - O(Log5 n)
     public int trailingZeroes(int n) {
         int cnt = 0;
         for(int i = 5; i <= n ; i *= 5){
