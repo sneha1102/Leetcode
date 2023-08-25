@@ -1,0 +1,48 @@
+Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+
+ 
+
+Example 1:
+
+Input: n = 3
+Output: ["((()))","(()())","(())()","()(())","()()()"]
+
+Example 2:
+
+Input: n = 1
+Output: ["()"]
+
+Solution:-
+
+Backtracking approach
+
+
+class Solution {
+    private StringBuilder sb = new StringBuilder();
+    private List<String> res = new ArrayList<>();
+    public List<String> generateParenthesis(int n) {
+        func(0, 0, n);
+        return res;
+    }
+
+    private void func(int openC, int closeC, int n){
+        if(sb.length() == 2 * n){
+            res.add(sb.toString());
+            return;
+        }
+
+        // add open bracket
+        if(openC < n){
+            sb.append("(");
+            func(openC + 1, closeC, n);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+
+        // add close bracket
+        if(closeC < openC){
+            sb.append(")");
+            func(openC, closeC + 1, n);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+}
