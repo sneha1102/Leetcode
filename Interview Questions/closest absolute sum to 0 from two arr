@@ -1,0 +1,45 @@
+Write a function that takes in 2 non-empty array of integers, find the pair of numbers whose absolute difference is closest to 0, 
+and return an array containing these two number, with number from 1st array in 1st position.  
+array1 = [-1, 5, 10, 20, 28, 3]  array2 = [26, 134, 135, 15, 17]
+
+Solution:-
+import java.util.Arrays;
+
+public class ClosestPair {
+    public static int[] findClosestPair(int[] arr1, int[] arr2) {
+        Arrays.sort(arr1);
+        Arrays.sort(arr2);
+
+        int[] closestPair = new int[2];
+        int minDiff = Integer.MAX_VALUE;
+
+        int i = 0, j = 0;
+
+        while (i < arr1.length && j < arr2.length) {
+            int diff = Math.abs(arr1[i] - arr2[j]);
+
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestPair[0] = arr1[i];
+                closestPair[1] = arr2[j];
+            }
+
+            if (arr1[i] < arr2[j]) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+
+        return closestPair;
+    }
+
+    public static void main(String[] args) {
+        int[] arr1 = {1, 3, 5, 7};
+        int[] arr2 = {2, 4, 6, 8};
+
+        int[] closestPair = findClosestPair(arr1, arr2);
+
+        System.out.println("Closest pair: " + closestPair[0] + ", " + closestPair[1]);
+    }
+}
