@@ -1,0 +1,72 @@
+Given an m x n grid of characters board and a string word, return true if word exists in the grid.
+
+The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+
+ 
+
+Example 1:
+
+Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
+Output: true
+
+Example 2:
+
+Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE"
+Output: true
+
+Example 3:
+
+Input: board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB"
+Output: false
+
+Solution:-
+
+class Solution {
+public boolean exist(char[][] board, String word) {
+ 
+        // len for matrix
+        int m = board.length;
+        int n = board[0].length;
+        
+        for(int i=0; i<m; i++){
+            for(int j=0; j<n; j++){
+                
+                // if backtracking result returned is true then return
+                if(check(board, word, i, j, m, n, 0))
+                    return true;
+            }
+        }
+      
+        return false;
+    }
+    
+    public boolean check(char board[][], String word,
+                          int i, int j, int m , int n, int curr){
+        
+        // meaning if it has reached abcced and then when it calls further tracks of 'd' in recursion. you need to check length to see if whole word is already met.       
+        if(curr >= word.length())
+            return true;
+      
+        // corner cases
+        if(i<0 || j<0 || i >=m || j>=n|| board[i][j] != word.charAt(curr) || board[i][j] == '.')
+            return false;
+        
+		// if character match then put . character so that we don't visit it again
+        if(board[i][j] == word.charAt(curr))
+            board[i][j] = '.';
+        
+        // to return final results
+        boolean exists = false;
+        
+        // check bottom right top left
+        exists = check(board, word, i+1, j, m, n, curr+1) ||
+                check(board, word, i, j+1, m, n, curr+1) ||
+                check(board, word, i-1, j, m, n, curr+1) ||
+                check(board, word, i, j-1, m, n, curr+1);
+        
+        // put word back
+		board[i][j] = word.charAt(curr);
+            
+        return exists;
+    }
+}
