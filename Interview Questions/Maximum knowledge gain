@@ -1,0 +1,66 @@
+Given
+d - no of days seminar going to happen
+n - no of events
+s - list of starting day
+e - list of ending day
+kn - list of knowledge gain point 
+k - maximum no of events that we can attend per day
+Find maximum knowledge gain in a day.
+
+Solution:-
+
+// Online Java Compiler
+// Use this editor to write, compile and run your Java code online
+import java.util.*;
+class Solution {
+    public static void main(String[] args) {
+        int[] s = {2, 4, 2, 5};
+        int[] e = {5, 5, 6, 9};
+        int[] kn = {100, 200, 300, 400};
+        int n = 4;
+        int d = 10;
+        int k = 2;
+// output should be 700 here like for day 6 and 7 i.e 700
+        int[][] event = new int[n][3];
+        for(int i = 0; i < n; i++){
+            event[i][0] = s[i];
+            event[i][1] = e[i];
+            event[i][2] = kn[i];
+        }
+
+        Arrays.sort(event, Comparator.comparingDouble(o->o[2]));
+
+        // for(int i = 0; i < n; i++){
+        //     for(int j = 0; j < 3; j++)
+        //         System.out.println(event[i][j]);
+        // }
+
+        int arr[] = new int[d + 1];
+        Arrays.fill(arr, 0);
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for(int i = event.length - 1; i >= 0; i--){
+            int startDay = event[i][0];
+            int endDay = event[i][1];
+            int know = event[i][2];
+            System.out.println(startDay + " d ");
+            for(int j = startDay; j <= endDay; j++){
+                if(map.containsKey(j)){
+                    int val = map.get(j);
+                    if(val < k){
+                        arr[j] += know;
+                        map.put(j, map.get(j) + 1);
+                    }
+                }else{
+                    arr[j] += know;
+                    map.put(j, 1);
+                }
+                
+            }
+            System.out.println(map + " m ");
+        }
+        for(int j = 1; j < arr.length; j++)
+            System.out.println(arr[j]);
+
+
+    }
+}
