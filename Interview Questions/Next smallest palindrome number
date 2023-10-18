@@ -1,0 +1,80 @@
+Given a number, in the form of an array Num[] of size N containing digits from 1 to 9(inclusive). The task is to find the next smallest palindrome strictly larger than the given number.
+
+Example 1:
+
+Input:
+N = 11
+Num[] = {9, 4, 1, 8, 7, 9, 7, 8, 3, 2, 2}
+Output: 9 4 1 8 8 0 8 8 1 4 9
+Explanation: Next smallest palindrome is
+9 4 1 8 8 0 8 8 1 4 9
+
+Example 2:
+
+Input:
+N = 5
+Num[] = {2, 3, 5, 4, 5}
+Output: 2 3 6 3 2
+Explanation: Next smallest palindrome is
+2 3 6 3 2
+
+Solution:-
+// even case, from middle check previous element if a[mid - 1] > a[mid] then swap left side element to right
+// if not then add one to mid and again swap left side element to right half 
+// odd case add one to a[mid] and again swap left side element to right half 
+
+
+class Solution {
+
+    Vector<Integer> generateNextPalindrome(int a[], int n) {
+        // code here
+        Vector<Integer> ans = new Vector<>();
+        int i, j, carry = 0, solved = 0;
+        for(i = n / 2; i < n; i++){
+            if(a[i] < a[n - i - 1]){
+                a[i] = a[n - i - 1];
+                for(j = i + 1; j < n; j++){
+                    a[j] = a[n - j - 1];
+                }
+                solved = 1;
+                break;
+            }else if(a[i] > a[n - i - 1]){
+                break;
+            }
+        }
+        if(solved == 1){
+            for(int num: a){
+                ans.add(num);
+            }
+            return ans;
+        }else{
+            carry = 1;
+            for(i = (n - 1) / 2; i >= 0; i--){
+                if(a[i] + carry == 10){
+                    a[i] = 0;
+                    carry = 1;
+                }else{
+                    a[i]++;
+                    carry = 0;
+                    break;
+                }
+            }
+            if(carry == 1){
+                ans.add(1);
+            }
+            for(int num: a){
+                ans.add(num);
+            }
+            if(carry == 1){
+                n++;
+            }
+            for(i = (n + 1) / 2; i < n; i++){
+                ans.set(i, ans.get(n - i - 1));
+            }
+            return ans;
+        }
+        
+    }
+}
+
+
