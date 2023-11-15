@@ -1,0 +1,78 @@
+You are given a binary string and the length of the binary string. The job is to find the groups that contain only 1's in them and return the number of groups present in the given binary string.
+
+Confused? Don't worry. Let's take a sample example for better understanding.
+Sample Example
+
+We will take an example so the problem statement will be clear for you. Let's go.
+
+Input:
+
+X = 110101
+L = 6
+
+ 
+
+Output:
+
+3
+
+
+Solution:-
+
+Approach 1 using stack
+
+
+
+import java.util.*;
+public class MyClass {
+    public static void main(String args[]) {
+      String str = "11110101";
+      int count = 0;
+      Stack<Integer> st = new Stack<>();
+      
+      for(int i = 0; i < str.length(); i++){
+          if(str.charAt(i) == '1'){
+              st.push(i);
+          }else{
+              if(!st.isEmpty()){
+                  count++;
+                  while(!st.isEmpty()){
+                      st.pop();
+                  }
+              }
+          }
+      }
+      if(!st.isEmpty()){
+          count++;
+      }
+      System.out.println(count);
+    }
+}
+
+
+Approach 2 without stack
+
+
+import java.util.*;
+public class MyClass {
+    public static void main(String args[]) {
+      String str = "1111";
+      int count = 0, ans = 0;
+      
+      
+      for(int i = 0; i < str.length(); i++){
+          if(str.charAt(i) == '1'){
+              count++;
+          }else{
+              if(count > 0){
+                  ans++;
+                  count = 0;
+              }
+          }
+      }
+      if(count != 0){
+          ans++;
+      }
+      System.out.println(ans);
+    }
+}
