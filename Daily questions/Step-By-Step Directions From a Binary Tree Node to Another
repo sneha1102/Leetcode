@@ -1,0 +1,115 @@
+You are given the root of a binary tree with n nodes. Each node is uniquely assigned a value from 1 to n. You are also given an integer startValue representing the value of the start node s, and a different integer destValue representing the value of the destination node t.
+
+Find the shortest path starting from node s and ending at node t. Generate step-by-step directions of such path as a string consisting of only the uppercase letters 'L', 'R', and 'U'. Each letter indicates a specific direction:
+
+    'L' means to go from a node to its left child node.
+    'R' means to go from a node to its right child node.
+    'U' means to go from a node to its parent node.
+
+Return the step-by-step directions of the shortest path from node s to node t.
+
+ 
+
+Example 1:
+
+Input: root = [5,1,2,3,null,6,4], startValue = 3, destValue = 6
+Output: "UURL"
+Explanation: The shortest path is: 3 → 1 → 5 → 2 → 6.
+
+Example 2:
+
+Input: root = [2,1], startValue = 2, destValue = 1
+Output: "L"
+Explanation: The shortest path is: 2 → 1.
+
+ 
+
+Constraints:
+
+    The number of nodes in the tree is n.
+    2 <= n <= 105
+    1 <= Node.val <= n
+    All the values in the tree are unique.
+    1 <= startValue, destValue <= n
+    startValue != destValue
+
+
+Solution:-
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    HashMap<Integer, TreeNode> parent = new HashMap<>();
+    HashMap<Integer, Integer> height = new HashMap<>();
+    public String getDirections(TreeNode root, int startValue, int destValue) {
+        StringBuilder firstPath = new StringBuilder();
+        StringBuilder secondPath = new StringBuilder();
+        
+        TreeNode lca = findLCA(root, startValue, destValue);
+        construct(lca, firstPath, startValue);
+        construct(lca, secondPath, destValue);
+        
+        firstPath.reverse();
+        secondPath.reverse();
+        
+        return "U".repeat(firstPath.length()) + secondPath.toString();
+    }
+    private void dfs(TreeNode p, TreeNode root, int h) {
+        if (root == null) return;
+        dfs(root, root.left, h + 1);
+        dfs(root, root.right, h + 1);
+        parent.put(root.val, p);
+        height.put(root.val, h);
+    }
+    
+    private TreeNode findLCA(TreeNode root, int u, int v) {
+        dfs(null, root, 0);
+        TreeNode lca = null;
+        
+        while (u != v) {
+            if (parent.get(u) == parent.get(v)) {
+                lca = parent.get(u);
+                break;
+            }
+            if (height.get(u) > height.get(v)) {
+                if (parent.get(u).val == v) lca = parent.get(u);
+                u = parent.get(u).val;
+            } else {
+                if (parent.get(v).val == u) lca = parent.get(v);
+                v = parent.get(v).val;
+            }
+        }
+        
+        return lca;
+    }
+    
+    private boolean construct(TreeNode root, StringBuilder s, int val) {
+        if (root == null) {
+            return false;
+        }
+        if (root.val == val) {
+            return true;
+        }
+        
+        boolean left = construct(root.left, s, val);
+        boolean right = construct(root.right, s, val);
+        
+        if (left) s.append("L");
+        else if (right) s.append("R");
+        
+        return left || right;
+    }
+}
