@@ -1,0 +1,160 @@
+You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money.
+
+Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1.
+
+You may assume that you have an infinite number of each kind of coin.
+
+ 
+
+Example 1:
+
+Input: coins = [1,2,5], amount = 11
+Output: 3
+Explanation: 11 = 5 + 5 + 1
+
+Example 2:
+
+Input: coins = [2], amount = 3
+Output: -1
+
+Example 3:
+
+Input: coins = [1], amount = 0
+Output: 0
+
+ 
+
+Constraints:
+
+    1 <= coins.length <= 12
+    1 <= coins[i] <= 231 - 1
+    0 <= amount <= 104
+
+
+Solution:-
+
+// // Approach - 1 using memrecursionoization
+// class Solution {
+//     public int coinChange(int[] coins, int amount) {
+//         int ans = func(coins.length - 1, amount, coins);
+//         if(ans >= 10001)
+//             return -1;
+//         else
+//             return ans;
+//     }
+
+//     public int func(int ind, int target, int[] coins){
+//         if(ind == 0){
+//             if(target % coins[ind] == 0){
+//                 return target / coins[ind];
+//             }else{
+//                 return 10001;
+//             }
+//         }
+
+//         // not take, so move to next index
+//         int nt = 0 + func(ind - 1, target, coins);
+//         // take, and since multiple supply can be done for same coin so be at same index
+//         int t = Integer.MAX_VALUE;
+//         if(coins[ind] <= target)
+//             t = 1 + func(ind, target - coins[ind], coins);
+//         return Math.min(nt, t);
+//     }
+// }
+
+// // Approach - 2 using memoization
+// class Solution {
+//     public int coinChange(int[] coins, int amount) {
+//         int dp[][] = new int[coins.length][amount + 1];
+//         int ans = func(coins.length - 1, amount, coins, dp);
+//         if(ans >= 10001)
+//             return -1;
+//         else
+//             return ans;
+//     }
+
+//     public int func(int ind, int target, int[] coins, int dp[][]){
+//         if(ind == 0){
+//             if(target % coins[ind] == 0){
+//                 return target / coins[ind];
+//             }else{
+//                 return 10001;
+//             }
+//         }
+//         if(dp[ind][target] != 0){
+//             return dp[ind][target];
+//         }
+
+//         // not take, so move to next index
+//         int nt = 0 + func(ind - 1, target, coins, dp);
+//         // take, and since multiple supply can be done for same coin so be at same index
+//         int t = Integer.MAX_VALUE;
+//         if(coins[ind] <= target)
+//             t = 1 + func(ind, target - coins[ind], coins, dp);
+//         return dp[ind][target] = Math.min(nt, t);
+//     }
+// }
+
+// // Approach - 3 using tabulation
+// class Solution {
+//     public int coinChange(int[] coins, int amount) {
+//         int dp[][] = new int[coins.length][amount + 1];
+//         // base case
+//         for(int t = 0; t <= amount; t++){
+//             if(t % coins[0] == 0)
+//                 dp[0][t] = t / coins[0];
+//             else
+//                 dp[0][t] = 10001;
+//         }
+
+//         for(int ind = 1; ind < coins.length; ind++){
+//             for(int t = 0; t <= amount; t++){
+//                 // not take, so move to next index
+//                 int nt = 0 + dp[ind - 1][t];
+//                 // take, and since multiple supply can be done for same coin so be at same index
+//                 int take = Integer.MAX_VALUE;
+//                 if(coins[ind] <= t)
+//                     take = 1 + dp[ind][t - coins[ind]];
+//                 dp[ind][t] = Math.min(nt, take);
+//             }
+//         }
+//         int ans = dp[coins.length - 1][amount];
+//         if(ans >= 10001)
+//             return -1;
+//         else
+//             return ans;
+//     }
+// }
+
+// Approach - 4 using space optimization
+class Solution {
+    public int coinChange(int[] coins, int amount) {
+        int prev[] = new int[amount + 1];
+        int cur[] = new int[amount + 1];
+        // base case
+        for(int t = 0; t <= amount; t++){
+            if(t % coins[0] == 0)
+                prev[t] = t / coins[0];
+            else
+                prev[t] = 10001;
+        }
+
+        for(int ind = 1; ind < coins.length; ind++){
+            for(int t = 0; t <= amount; t++){
+                // not take, so move to next index
+                int nt = 0 + prev[t];
+                // take, and since multiple supply can be done for same coin so be at same index
+                int take = Integer.MAX_VALUE;
+                if(coins[ind] <= t)
+                    take = 1 + cur[t - coins[ind]];
+                cur[t] = Math.min(nt, take);
+            }
+            prev = cur;
+        }
+        int ans = prev[amount];
+        if(ans >= 10001)
+            return -1;
+        else
+            return ans;
+    }
+}
