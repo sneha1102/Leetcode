@@ -1,0 +1,51 @@
+class Solution{
+
+public int minTransformers(int[][] txns){
+  Map<Integer, Integer> balanceMap = new HashMap<>();
+  // compute the overall balance (incoming - outgoing) for each member
+  for(int txn[]: txns){
+    int from = txn[0];
+    int to = txn[1];
+    int amount = txn[2];
+    balanceMap.put(from, balanceMap.getOrDefault(from, 0) - amount);
+    balanceMap.put(to, balanceMap.getOrDefault(to, 0) + amount);
+  }
+
+  List<Integer> balances = new ArrayList<>();
+  for(int amt: balances.values()){
+  // amt having 0 will not contribute so skip it
+  if(amt != 0){
+    balances.add(amt);
+  }
+  }
+  return dfs(balances, 0);
+}
+
+private int dfs(List<Integer> balanceList, int currentIndex){
+  if(balanceList.size() == 0 || currentIndex >= balanceList.size()) return 0;
+
+  if(balanceList.get(currenIndex) == 0){
+    return dfs(balanceList, currentIndex + 1;
+}
+
+int currVal = balanceList.get(currentIndex);
+int minTxnCount = Integere.MAX_VALUE;
+
+for(int txnIndex = currentIndex + 1; txnIndex < balanceList.size(); txnIndex++){
+  int nextVal = balanceList.get(txnIndex);
+  if(currVal * nextVal < 0){
+    balanceList.set(txnIndex, currVal + nextVal);
+    minTxnCount = Math.min(minTxnCount, 1 + dfs(balanceList, currentIndex + 1);
+    balanceList.set(txnIndex, nextVal);
+
+    if(currVal + nextVal == 0){
+      break;
+    }
+  }
+}
+return minTxnCount;
+}
+}
+
+
+TC - O(N!)
