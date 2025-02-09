@@ -1,0 +1,93 @@
+Given two strings s and t, return true if t is an
+anagram
+of s, and false otherwise.
+
+ 
+
+Example 1:
+
+Input: s = "anagram", t = "nagaram"
+
+Output: true
+
+Example 2:
+
+Input: s = "rat", t = "car"
+
+Output: false
+
+ 
+
+Constraints:
+
+    1 <= s.length, t.length <= 5 * 104
+    s and t consist of lowercase English letters.
+
+Solution:-
+
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        // approach - 1
+    //     if(s.length() != t.length()){
+    //         return false;
+    //     }
+    //     char c1[] = s.toCharArray();
+    //     char c2[] = t.toCharArray();
+    //     Arrays.sort(c1);
+    //     Arrays.sort(c2);
+    //     for(int i = 0; i < s.length(); i++){
+    //         if(c1[i] != c2[i]){
+    //             return false;
+    //         }
+    //     }
+    //     return true;
+    // }
+
+    // approach - 2
+//     if(s.length() != t.length()){
+//         return false;
+//     }
+//     Map<Character, Integer> m = new HashMap<>();
+
+//     for(int i = 0; i < s.length(); i++){
+//         m.put(s.charAt(i), m.getOrDefault(s.charAt(i), 0) + 1);
+//     }
+
+//     for(int i = 0; i < s.length(); i++){
+//         if(m.containsKey(t.charAt(i))){
+//             m.put(t.charAt(i), m.get(t.charAt(i)) - 1);
+//         }
+//     }
+
+//     int c = 0;
+//     for(Map.Entry<Character, Integer> e: m.entrySet()){
+//         c = e.getValue();
+//         if(c != 0){
+//             return false;
+//         }
+//     }
+//     return true;
+//   }
+
+    // approach - 3
+    int hash[] = new int[26];
+      if(s.length() != t.length()){
+            return false;
+        }
+      
+        for(int i = 0; i < s.length(); i++){
+            hash[s.charAt(i) - 'a']++;
+        }
+
+        for(int i = 0; i < t.length(); i++){
+                hash[t.charAt(i) - 'a']--;
+        }
+
+        for(int i = 0; i < hash.length; i++){
+            if(hash[i] != 0){
+                return false;
+            }
+        }
+        return true;
+    }
+}
