@@ -1,0 +1,95 @@
+Given an array of strings strs, group the
+anagrams
+together. You can return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: strs = ["eat","tea","tan","ate","nat","bat"]
+
+Output: [["bat"],["nat","tan"],["ate","eat","tea"]]
+
+Explanation:
+
+    There is no string in strs that can be rearranged to form "bat".
+    The strings "nat" and "tan" are anagrams as they can be rearranged to form each other.
+    The strings "ate", "eat", and "tea" are anagrams as they can be rearranged to form each other.
+
+Example 2:
+
+Input: strs = [""]
+
+Output: [[""]]
+
+Example 3:
+
+Input: strs = ["a"]
+
+Output: [["a"]]
+
+ 
+
+Constraints:
+
+    1 <= strs.length <= 104
+    0 <= strs[i].length <= 100
+    strs[i] consists of lowercase English letters.
+
+
+Solution:-
+
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        // approach - 1
+        // List<List<String>> ans = new ArrayList<>();
+        // HashMap<String, List<String>> m = new HashMap<>();
+        // for(String s: strs){
+        //     char ch[] = s.toCharArray();
+        //     Arrays.sort(ch);
+        //     String st = String.valueOf(ch);
+        //     if(!m.containsKey(st))
+        //         m.put(st, new ArrayList<>());
+        //     m.get(st).add(s);
+        // }
+
+        // for(Map.Entry<String, List<String>> e: m.entrySet()){
+        //     ans.add(e.getValue());
+        // }
+        // return ans;
+
+        // approach - 2
+        List<List<String>> ans = new ArrayList<>();
+        HashMap<String, List<String>> m = new HashMap<>();
+
+        for(String s: strs){
+            String st = generateWord(s);
+            if(!m.containsKey(st))
+                m.put(st, new ArrayList<>());
+            m.get(st).add(s);
+        }
+        for(Map.Entry<String, List<String>> e: m.entrySet()){
+            ans.add(e.getValue());
+        }
+        return ans;
+
+    }
+    private String generateWord(String s){
+         int hash[] = new int[26];
+         Arrays.fill(hash, 0);
+         // store each char in hash array
+         for(int i = 0; i < s.length(); i++){
+            hash[s.charAt(i) - 'a']++;
+         }
+         String word = "";
+         for(int i = 0; i < 26; i++){
+            // fetch the count of current char in given word
+            int freq  = hash[i];
+            // if freq > 0 then create the occurence of that char freq times in current word
+            if(freq > 0){
+                word += String.valueOf((char) (i + 'a')).repeat(freq);
+            }
+         }
+         return word;
+    }
+}
