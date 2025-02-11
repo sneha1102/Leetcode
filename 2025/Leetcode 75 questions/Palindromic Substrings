@@ -1,0 +1,85 @@
+Given a string s, return the number of palindromic substrings in it.
+
+A string is a palindrome when it reads the same backward as forward.
+
+A substring is a contiguous sequence of characters within the string.
+
+ 
+
+Example 1:
+
+Input: s = "abc"
+Output: 3
+Explanation: Three palindromic strings: "a", "b", "c".
+
+Example 2:
+
+Input: s = "aaa"
+Output: 6
+Explanation: Six palindromic strings: "a", "a", "a", "aa", "aa", "aaa".
+
+ 
+
+Constraints:
+
+    1 <= s.length <= 1000
+    s consists of lowercase English letters.
+
+Solution:-
+
+// class Solution {
+//     public int countSubstrings(String s) {
+//         int c = 0;
+//         for(int i = 0; i < s.length(); i++){
+//             for(int j = i; j < s.length(); j++){
+//                 c += isPalindrome(s, i, j) == true ? 1: 0;
+//             }
+//         }
+//         return c;
+//     }
+//     private boolean isPalindrome(String s, int st, int e){
+//         while(st < e){
+//             if(s.charAt(st) != s.charAt(e)){
+//                 return false;
+//             }
+//             st++;
+//             e--;
+//         }
+//         return true;
+//     }
+// }
+
+class Solution{
+    Integer dp[][];
+    public int countSubstrings(String s) {
+        int n = s.length();
+        int c = 0;
+        dp = new Integer[n][n];
+        for(int st = 0; st < n; st++){
+            for(int e = st; e < n; e++){
+                int res = checkForPalindrome(s, st, e);
+                c += res == -1 ? 0: res;
+            }
+        }
+        return c;
+    }
+
+    private int checkForPalindrome(String s, int st, int e){
+        if(st >= e){
+            return 1;
+        }
+        if(dp[st][e] != null){
+            return dp[st][e];
+        }
+
+        if(s.charAt(st) == s.charAt(e)){
+            Integer res = checkForPalindrome(s, st + 1, e - 1);
+            if(res == -1){
+                return -1;
+            }
+        return dp[st][e] = 1;
+        }else{
+        return dp[st][e] = -1;
+        }
+    }
+}
