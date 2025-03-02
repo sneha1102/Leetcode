@@ -1,0 +1,150 @@
+Given an integer array nums, return the length of the longest strictly increasing
+
+.
+
+ 
+
+Example 1:
+
+Input: nums = [10,9,2,5,3,7,101,18]
+Output: 4
+Explanation: The longest increasing subsequence is [2,3,7,101], therefore the length is 4.
+
+Example 2:
+
+Input: nums = [0,1,0,3,2,3]
+Output: 4
+
+Example 3:
+
+Input: nums = [7,7,7,7,7,7,7]
+Output: 1
+
+ 
+
+Constraints:
+
+    1 <= nums.length <= 2500
+    -104 <= nums[i] <= 104
+Solution:-
+
+class Solution {
+    // recusrsion
+    // public int lengthOfLIS(int[] nums) {
+    //     return func(0, -1, nums);
+    // }
+
+    // public int func(int ind, int prev_ind, int[] nums){
+    //     if(ind == nums.length){
+    //         return 0;
+    //     }
+
+    //     // not take - move next ind, prev will be same
+    //     int nt = 0 + func(ind + 1, prev_ind, nums);
+    //     // take, move to next ind and current ind will become prev ind
+    //     int t = 0;
+    //     if(prev_ind == -1 || nums[ind] > nums[prev_ind]){
+    //         t = 1 + func(ind + 1, ind, nums);
+    //     }
+    //     return Math.max(nt, t);
+
+    // }
+
+    // memoization
+    // public int lengthOfLIS(int[] nums) {
+    //     // ind range - 0 to n - 1, prev_ind range - -1 to n - 1, so we will be do coordinate shift
+    //      // i.e -1 -> 0, 0 -> 1...so on
+    //     int dp[][] = new int[nums.length + 1][nums.length + 1];
+
+    //     return func(0, -1, nums, dp);
+    // }
+
+    // public int func(int ind, int prev_ind, int[] nums, int dp[][]){
+    //     if(ind == nums.length){
+    //         return 0;
+    //     }
+
+    //     // prev_ind + 1 as we shifted coordinate by 1
+    //     if(dp[ind][prev_ind + 1] != 0){
+    //         return dp[ind][prev_ind + 1];
+    //     }
+
+    //     // not take - move next ind, prev will be same
+    //     int nt = 0 + func(ind + 1, prev_ind, nums, dp);
+    //     // take, move to next ind and current ind will become prev ind
+    //     int t = 0;
+    //     if(prev_ind == -1 || nums[ind] > nums[prev_ind]){
+    //         t = 1 + func(ind + 1, ind, nums, dp);
+    //     }
+    //     return dp[ind][prev_ind + 1] = Math.max(nt, t);
+
+    // }
+
+    // tabulation
+    // public int lengthOfLIS(int[] nums) {
+    //     // ind range - 0 to n - 1, prev_ind range - -1 to n - 1, so we will be do coordinate shift
+    //      // i.e -1 -> 0, 0 -> 1...so on
+    //     int dp[][] = new int[nums.length + 1][nums.length + 1];
+    //     int n = nums.length - 1;
+    //     for(int ind = n; ind >= 0; ind--){
+    //         for(int prev_ind = ind - 1; prev_ind >= -1; prev_ind--){
+    //             // not take - move next ind, prev will be same
+    //             int nt = 0 + dp[ind + 1][prev_ind + 1];
+    //             // take, move to next ind and current ind will become prev ind
+    //             int t = 0;
+    //             if(prev_ind == -1 || nums[ind] > nums[prev_ind]){
+    //                 t = 1 + dp[ind + 1][ind + 1];
+    //             }
+    //             dp[ind][prev_ind + 1] = Math.max(nt, t);
+    //         }
+    //     }
+    //     return dp[0][-1 + 1];
+    // }
+
+    // space optimisation
+    // public int lengthOfLIS(int[] nums) {
+    //     // ind range - 0 to n - 1, prev_ind range - -1 to n - 1, so we will be do coordinate shift
+    //      // i.e -1 -> 0, 0 -> 1...so on
+    //     int next_ind[] = new int[nums.length + 1];
+    //     int curr_ind[] = new int[nums.length + 1];
+    //     int n = nums.length - 1;
+    //     for(int ind = n; ind >= 0; ind--){
+    //         for(int prev_ind = ind - 1; prev_ind >= -1; prev_ind--){
+    //             // not take - move next ind, prev will be same
+    //             int nt = 0 + next_ind[prev_ind + 1];
+    //             // take, move to next ind and current ind will become prev ind
+    //             int t = 0;
+    //             if(prev_ind == -1 || nums[ind] > nums[prev_ind]){
+    //                 t = 1 + next_ind[ind + 1];
+    //             }
+    //             curr_ind[prev_ind + 1] = Math.max(nt, t);
+    //         }
+    //         next_ind = curr_ind;
+    //     }
+    //     return curr_ind[-1 + 1];
+    // }
+
+    // binary search TC - O(N * Log N), SC - O(N) - temp array
+
+    public int lengthOfLIS(int[] nums) {
+        List<Integer> temp = new ArrayList<>();
+        temp.add(nums[0]);
+        int len = 1;
+        
+        for(int i = 1; i < nums.length; i++){
+            // nums[i] > the last element of temp array
+            if(nums[i] > temp.get(temp.size() - 1)){
+                temp.add(nums[i]);
+                len++;
+            }else{
+                // Replacement step, i.e use the existing space
+                int ind = Collections.binarySearch(temp, nums[i]);
+                if(ind < 0){
+                    ind = -ind - 1;
+                }
+                temp.set(ind, nums[i]);
+            }
+        }
+        return len;
+    }
+}
