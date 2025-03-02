@@ -1,0 +1,31 @@
+Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), determine if a person could attend all meetings.
+
+Example:
+Input: [[0,30],[5,10],[15,20]]
+Output: false
+
+Input: [[7,10],[2,4]]
+Output: true
+Solution:-
+
+public class MeetingRooms {
+    public static boolean canAttendMeetings(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        
+        for (int i = 1; i < intervals.length; i++) {
+            // Check if the current meeting starts before the previous one ends
+            if (intervals[i][0] < intervals[i - 1][1]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public static void main(String[] args) {
+        int[][] intervals1 = {{0, 30}, {5, 10}, {15, 20}};
+        int[][] intervals2 = {{7, 10}, {2, 4}};
+        
+        System.out.println(canAttendMeetings(intervals1)); // false
+        System.out.println(canAttendMeetings(intervals2)); // true
+    }
+}
