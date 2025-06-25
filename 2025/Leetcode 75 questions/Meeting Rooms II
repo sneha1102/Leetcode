@@ -17,11 +17,11 @@ public class MeetingRoomsII {
         
         // Sort the intervals by start time
         Arrays.sort(intervals, (a, b) -> a[0] - b[0]);
-        
+        // min heap, sort t]in ascending order, min one will be at top
         PriorityQueue<Integer> allocator = new PriorityQueue<Integer>(
             intervals.length, (a, b) -> a - b);
         
-        // Add the first meeting
+        // Add the first meeting end time
         allocator.add(intervals[0][1]);
         
         // Iterate over remaining intervals
