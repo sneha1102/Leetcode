@@ -1,0 +1,83 @@
+Given a binary tree, return an array where elements represent the bottom view of the binary tree from left to right.
+
+Note: If there are multiple bottom-most nodes for a horizontal distance from the root, then the later one in the level order traversal is considered. For example, in the below diagram, 7 and 34 both are the bottommost nodes at a horizontal distance of 0 from the root, here 34 will be considered.
+
+For the above tree, the output should be 5 8 34 22 25
+
+Examples :
+
+Input: root[] = [1, 3, 2]
+
+Output: [3 1 2]
+Explanation: First case represents a tree with 3 nodes and 2 edges where root is 1, left child of 1 is 3 and right child of 1 is 2.
+
+Thus bottom view of the binary tree will be 3 1 2.
+
+Input: root[] = [10, 20, 30, 40, 60]
+         
+Output: [40 20 60 30]
+
+Constraints:
+1 <= number of nodes <= 105
+1 <= node->data <= 105
+
+Solution:-
+
+/*
+class Node
+{
+    int data; //data of the node
+    int hd; //horizontal distance of the node
+    Node left, right; //left and right references
+
+    // Constructor of tree node
+    public Node(int key)
+    {
+        data = key;
+        hd = Integer.MAX_VALUE;
+        left = right = null;
+    }
+}
+*/
+class Pair{
+    int hd;
+    Node node;
+    Pair(Node n, int hd){
+        this.hd = hd;
+        this.node = n;
+    }
+}
+class Solution {
+    public ArrayList<Integer> bottomView(Node root) {
+        // Code here
+        ArrayList<Integer> res = new ArrayList<>();
+        if(root == null){
+            return res;
+        }
+        Map<Integer, Node> m = new TreeMap<>();
+        Queue<Pair> q = new LinkedList<>();
+        q.add(new Pair(root, 0));
+        while(!q.isEmpty()){
+            int size = q.size();
+            for(int i = 0; i < size; i++){
+                Pair p = q.poll();
+                int hd = p.hd;
+                Node node = p.node;
+                m.put(hd, node);
+               
+                if(node.left != null){
+                    q.add(new Pair(node.left, hd - 1));
+                }
+                if(node.right != null){
+                    q.add(new Pair(node.right, hd + 1));
+                }
+                
+            }
+        }
+        
+        for(Map.Entry<Integer, Node> e : m.entrySet()){
+            res.add(e.getValue().data);
+        }
+        return res;
+    }
+}
