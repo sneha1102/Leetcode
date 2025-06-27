@@ -1,0 +1,48 @@
+Given an undirected graph with V vertices labeled from 0 to V-1. The graph is represented using an adjacency list where adj[i] lists all nodes connected to node. Determine if the graph contains any cycles.
+
+Note: The graph does not contain any self-edges (edges where a vertex is connected to itself).
+Examples:
+
+
+Input: V = 6, adj= [[1, 3], [0, 2, 4], [1, 5], [0, 4], [1, 3, 5], [2, 4]]
+
+Output: True
+
+Explanation: The graph contains a cycle: 0 ->1 -> 2 -> 5 -> 4 -> 1.
+
+Input: V = 4, adj= [[1, 2], [0], [0, 3], [2]]
+
+Output: False
+
+Explanation: The graph does not contain any cycles.
+Constraints:
+
+    E=number of edges
+    1 ≤ V, E ≤ 104
+Solution:-
+
+lass Solution {
+    private boolean dfs(int node, int parent, int vis[], ArrayList<ArrayList<Integer>> 
+    adj) {
+        vis[node] = 1; 
+        // go to all adjacent nodes
+        for(int adjacentNode: adj.get(node)) {
+            if(vis[adjacentNode]==0) {
+                if(dfs(adjacentNode, node, vis, adj) == true) 
+                    return true; 
+            }
+            // if adjacent node is visited and is not its own parent node
+            else if(adjacentNode != parent) return true; 
+        }
+        return false; 
+    }
+    // Function to detect cycle in an undirected graph.
+    public boolean isCycle(int V, ArrayList<ArrayList<Integer>> adj) {
+       int vis[] = new int[V]; 
+       for(int i = 0;i<V;i++) {
+           if(vis[i] == 0) {
+               if(dfs(i, -1, vis, adj) == true) return true; 
+           }
+       }
+       return false; 
+    }
