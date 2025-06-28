@@ -1,0 +1,78 @@
+Given an m x n binary matrix mat, return the distance of the nearest 0 for each cell.
+
+The distance between two cells sharing a common edge is 1.
+
+ 
+
+Example 1:
+
+Input: mat = [[0,0,0],[0,1,0],[0,0,0]]
+Output: [[0,0,0],[0,1,0],[0,0,0]]
+
+Example 2:
+
+Input: mat = [[0,0,0],[0,1,0],[1,1,1]]
+Output: [[0,0,0],[0,1,0],[1,2,1]]
+
+ 
+
+Constraints:
+
+    m == mat.length
+    n == mat[i].length
+    1 <= m, n <= 104
+    1 <= m * n <= 104
+    mat[i][j] is either 0 or 1.
+    There is at least one 0 in mat.
+
+Solution:-
+
+class Solution {
+    class Node{
+        int first;
+        int second;
+        int third;
+        Node(int f, int s, int t){
+            this.first = f;
+            this.second = s;
+            this.third = t;
+        }
+    }
+    public int[][] updateMatrix(int[][] mat) {
+        int m = mat.length;
+        int n = mat[0].length;
+        int vis[][] = new int[m][n];;
+        int dist[][] = new int[m][n];
+        Queue<Node> q = new LinkedList<>();
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(mat[i][j] == 0){
+                    q.add(new Node(i, j, 0));
+                    vis[i][j] = 1;
+                }else{
+                    vis[i][j] = 0;
+                }
+            }
+        }
+
+        int dir[][] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        while(!q.isEmpty()){
+            Node node = q.poll();
+            int x = node.first;
+            int y = node.second;
+            int steps = node.third;
+            dist[x][y] = steps;
+
+            for(int d[]: dir){
+                int i = d[0] + x;
+                int j = d[1] + y;
+
+                if(i >= 0 && j >= 0 && i < m && j < n && vis[i][j] == 0){
+                    vis[i][j] = 1;
+                    q.add(new Node(i, j, steps + 1));
+                }
+            }
+        }
+        return dist;
+    }
+}
