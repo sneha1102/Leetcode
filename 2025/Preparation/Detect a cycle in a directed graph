@@ -1,0 +1,63 @@
+Given a directed graph with V vertices labeled from 0 to V-1. The graph is represented using an adjacency list where adj[i] lists all nodes connected to node. Determine if the graph contains any cycles.
+Examples:
+
+Input: V = 6, adj= [ [1], [2, 5], [3], [4], [1], [ ] ]
+
+
+
+Output: True
+
+
+Explanation: The graph contains a cycle: 1 -> 2 -> 3 -> 4 -> 1.
+
+Input: V = 4, adj= [[1,2], [2], [], [0,2]]
+
+
+Output: False
+
+
+Explanation: The graph does not contain a cycle.
+Constraints:
+
+      E=number of edges
+      1 ≤ V, E ≤ 104
+
+Solution:-
+
+class Solution {
+    public boolean isCyclic(int N, List<List<Integer>> adj) {
+        int vis[] = new int[N];
+        int pathVis[] = new int[N];
+
+        for (int i = 0; i < N; i++) {
+            if (vis[i] == 0) {
+                if (dfs(vis, adj, i, pathVis)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean dfs(int[] vis, List<List<Integer>> adj, int node, int[] pathVis) {
+        vis[node] = 1;
+        pathVis[node] = 1;
+
+        // Traverse all neighbors of the current node
+        for (int it : adj.get(node)) {
+            if (vis[it] == 0) {
+                // If the node is unvisited, perform DFS
+                if (dfs(vis, adj, it, pathVis)) {
+                    return true;
+                }
+            } else if (pathVis[it] == 1) {
+                // If the node is already visited in the same path, a cycle exists
+                return true;
+            }
+        }
+
+        // Backtrack: remove the current node from the current path
+        pathVis[node] = 0;
+        return false;
+    }
+}
