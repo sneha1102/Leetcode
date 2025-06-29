@@ -1,0 +1,191 @@
+Design a Thread Safe cache that support both LFU and LRU; both should use same data structure. Type of eviction policy will be pass in constructor while creating of cache.
+
+Solution:-
+
+public class ThreadSafeCache {
+    private final int capacity; // Maximum capacity of the cache
+    private final String evictionPolicy; // Eviction policy type: "LRU" or "LFU"
+    private final Map<Integer, CacheNode> cacheMap; // Map for storing key-node pairs
+    private final DoublyLinkedList linkedList; // Doubly linked list for eviction control
+    private final Map<Integer, Integer> frequencyMap; // For LFU: key to frequency mapping
+    private final Map<Integer, DoublyLinkedList> frequencyListMap; // For LFU: frequency to list mapping
+    private int minFrequency; // For LFU: stores the minimum frequency
+
+    // Lock for thread safety
+    private final Object lock = new Object();
+
+    /**
+     * Constructor
+     *
+     * @param capacity       Maximum capacity of the cache
+     * @param evictionPolicy Type of eviction policy: "LRU" or "LFU"
+     */
+    public ThreadSafeCache(int capacity, String evictionPolicy) {
+        this.capacity = capacity;
+        this.evictionPolicy = evictionPolicy;
+        this.cacheMap = new HashMap<>();
+        this.linkedList = new DoublyLinkedList();
+        this.frequencyMap = new HashMap<>();
+        this.frequencyListMap = new HashMap<>();
+        this.minFrequency = 0;
+
+        if (!evictionPolicy.equalsIgnoreCase("LRU") && !evictionPolicy.equalsIgnoreCase("LFU")) {
+            throw new IllegalArgumentException("Eviction policy must be either LRU or LFU.");
+        }
+    }
+
+    /** Get the value of the given key */
+    public int get(int key) {
+        synchronized (lock) {
+            if (!cacheMap.containsKey(key)) {
+                return -1;
+            }
+            CacheNode node = cacheMap.get(key);
+
+            if (evictionPolicy.equalsIgnoreCase("LFU")) {
+                updateFrequency(node);
+            } else if (evictionPolicy.equalsIgnoreCase("LRU")) {
+                linkedList.moveToHead(node);
+            }
+
+            return node.value;
+        }
+    }
+
+    /** Put a key-value pair in the cache */
+    public void put(int key, int value) {
+        synchronized (lock) {
+            if (capacity == 0) {
+                return; // No capacity, no action taken
+            }
+
+            if (cacheMap.containsKey(key)) {
+                CacheNode existingNode = cacheMap.get(key);
+                existingNode.value = value;
+
+                if (evictionPolicy.equalsIgnoreCase("LFU")) {
+                    updateFrequency(existingNode);
+                } else if (evictionPolicy.equalsIgnoreCase("LRU")) {
+                    linkedList.moveToHead(existingNode);
+                }
+            } else {
+                if (cacheMap.size() >= capacity) {
+                    // Evict the least frequently/recently used node
+                    if (evictionPolicy.equalsIgnoreCase("LFU")) {
+                        // Remove node with minimum frequency
+                        DoublyLinkedList minFreqList = frequencyListMap.get(minFrequency);
+                        CacheNode toEvict = minFreqList.removeTail();
+                        cacheMap.remove(toEvict.key);
+                        frequencyMap.remove(toEvict.key);
+                        if (minFreqList.size == 0) {
+                            frequencyListMap.remove(minFrequency);
+                        }
+                    } else if (evictionPolicy.equalsIgnoreCase("LRU")) {
+                        // Remove least recently used node (tail node)
+                        CacheNode toEvict = linkedList.removeTail();
+                        cacheMap.remove(toEvict.key);
+                    }
+                }
+
+                // Add the new node
+                CacheNode newNode = new CacheNode(key, value);
+                cacheMap.put(key, newNode);
+
+                if (evictionPolicy.equalsIgnoreCase("LFU")) {
+                    frequencyMap.put(key, 1);
+                    frequencyListMap.computeIfAbsent(1, k -> new DoublyLinkedList()).addNode(newNode);
+                    minFrequency = 1; // Reset min frequency
+                } else if (evictionPolicy.equalsIgnoreCase("LRU")) {
+                    linkedList.addNode(newNode);
+                }
+            }
+        }
+    }
+
+    private void updateFrequency(CacheNode node) {
+        int currentFrequency = frequencyMap.get(node.key);
+        DoublyLinkedList currentList = frequencyListMap.get(currentFrequency);
+        currentList.removeNode(node); // Remove node from current frequency list
+
+        if (currentFrequency == minFrequency && currentList.size == 0) {
+            minFrequency++; // Update min frequency
+            frequencyListMap.remove(currentFrequency);
+        }
+
+        int newFrequency = currentFrequency + 1;
+        frequencyMap.put(node.key, newFrequency); // Update frequency in map
+        frequencyListMap.computeIfAbsent(newFrequency, k -> new DoublyLinkedList()).addNode(node);
+    }
+
+    // Cache Node
+    static class CacheNode {
+        int key, value;
+        CacheNode prev, next;
+
+        public CacheNode(int key, int value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    // Doubly Linked List for LRU and eviction control
+    static class DoublyLinkedList {
+        CacheNode head, tail;
+        int size;
+
+        public DoublyLinkedList() {
+            this.head = new CacheNode(0, 0);
+            this.tail = new CacheNode(0, 0);
+            head.next = tail;
+            tail.prev = head;
+            size = 0;
+        }
+
+        void addNode(CacheNode node) {
+            node.next = head.next;
+            node.prev = head;
+            head.next.prev = node;
+            head.next = node;
+            size++;
+        }
+
+        void moveToHead(CacheNode node) {
+            removeNode(node);
+            addNode(node);
+        }
+
+        void removeNode(CacheNode node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+            size--;
+        }
+
+        CacheNode removeTail() {
+            if (size > 0) {
+                CacheNode toRemove = tail.prev;
+                removeNode(toRemove);
+                return toRemove;
+            }
+            return null;
+        }
+    }
+
+    // Main method for testing
+    public static void main(String[] args) {
+        ThreadSafeCache lruCache = new ThreadSafeCache(2, "LRU");
+        lruCache.put(1, 1);
+        lruCache.put(2, 2);
+        System.out.println(lruCache.get(1)); // Output: 1
+        lruCache.put(3, 3); // Evicts key 2
+        System.out.println(lruCache.get(2)); // Output: -1
+        System.out.println(lruCache.get(3)); // Output: 3
+
+        ThreadSafeCache lfuCache = new ThreadSafeCache(2, "LFU");
+        lfuCache.put(1, 1);
+        lfuCache.put(2, 2);
+        System.out.println(lfuCache.get(1)); // Output: 1
+        lfuCache.put(3, 3); // Evicts key 2 (least frequently used)
+        System.out.println(lfuCache.get(2)); // Output: -1
+        System.out.println(lfuCache.get(3)); // Output: 3
+    }
+}
