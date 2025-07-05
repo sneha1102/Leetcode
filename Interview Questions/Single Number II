@@ -28,31 +28,34 @@ Solution:-
 class Solution {
     public int singleNumber(int[] nums) {
     // TC - O(32 * N)
-    // int ans = 0;
-    // for(int i = 0; i < 32; i++) {
-    //     int sum = 0;
-    //     for(int j = 0; j < nums.length; j++) {
-    //         // if no  occurs 3 times then sum should be 0
-    //         if(((nums[j] >> i) & 1) == 1) {
-    //             sum++;
-    //             sum %= 3;
-    //         }
-    //     }
-    //     if(sum != 0) {
-    //         ans |= sum << i;
-    //     }
-    // }
-    // return ans;
-
-    // Sort and compare
-    Arrays.sort(nums);
-    for(int i = 1; i < nums.length; i += 3){
-        if(nums[i] != nums[i - 1]){
-            return nums[i - 1];
+    int res = 0;
+    // for each bit for all no check which bit is there(0 or 1) for no which is occuring once
+    for(int k = 0; k < 32; k++){
+        int temp = (1 << k);
+        int countOnes = 0;
+        for(int num: nums){
+            // do and operation between no and 1 << k to find what bit is there in no for kth position
+            if((num & temp) != 0){
+                countOnes++; 
+            }
+        }
+        // means no which is occuring once, kth bit is 1 so set res kth bit to k
+        if(countOnes % 3 == 1){
+            res = (res | temp);
         }
     }
-    // if all previous and current index element is matching means last element is appearing only once
-    return nums[nums.length - 1];
+    return res;
+
+    // Tc - O(N Log N)
+    // Sort and compare
+    // Arrays.sort(nums);
+    // for(int i = 1; i < nums.length; i += 3){
+    //     if(nums[i] != nums[i - 1]){
+    //         return nums[i - 1];
+    //     }
+    // }
+    // // if all previous and current index element is matching means last element is appearing only once
+    // return nums[nums.length - 1];
 
 }
 }
