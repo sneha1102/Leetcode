@@ -1,0 +1,71 @@
+Given an integer array nums, in which exactly two elements appear only once and all the other elements appear exactly twice. Find the two elements that appear only once. You can return the answer in any order.
+
+You must write an algorithm that runs in linear runtime complexity and uses only constant extra space.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,1,3,2,5]
+Output: [3,5]
+Explanation:  [5, 3] is also a valid answer.
+
+Example 2:
+
+Input: nums = [-1,0]
+Output: [-1,0]
+
+Example 3:
+
+Input: nums = [0,1]
+Output: [1,0]
+
+ 
+
+Constraints:
+
+    2 <= nums.length <= 3 * 104
+    -231 <= nums[i] <= 231 - 1
+    Each integer in nums will appear twice, only two integers will appear once.
+
+
+
+Solution:-
+class Solution {
+    public int[] singleNumber(int[] nums) {
+        // xor of each no => will return xor of two no which is occuring once
+        // find mask to find the first rightmost bit which is set in the resultant xor
+        // which means that bit is different in both no
+        // based on that group no in two group i.e where that bit is set and where that bit is not set i.e do mask & nums[i]
+        // then xor each group no
+        
+        // Resultant array to store the two unique numbers
+        int[] res = new int[2];
+        
+        // Step 1: XOR all numbers in the array to find the XOR of the two unique numbers
+        int xorr = 0;
+        for (int num : nums) {
+            xorr ^= num;
+        }
+        
+        // Step 2: Find the rightmost set bit (mask) in the XOR result
+        // The mask will help differentiate the two unique numbers
+        int mask = xorr & -xorr;
+        
+        // Step 3: Divide numbers into two groups based on the mask bit and XOR each group
+        int groupa = 0;
+        int groupb = 0;
+        for (int num : nums) {
+            if ((num & mask) != 0) { // Check whether the number has the mask bit set
+                groupa ^= num;
+            } else { // Otherwise, it belongs to the other group
+                groupb ^= num;
+            }
+        }
+        
+        // Step 4: The final XOR results of each group will be the two unique numbers
+        res[0] = groupa;
+        res[1] = groupb;
+        return res;
+    }
+}
