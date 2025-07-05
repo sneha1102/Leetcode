@@ -1,0 +1,79 @@
+Given a string s representing a valid expression, implement a basic calculator to evaluate it, and return the result of the evaluation.
+
+Note: You are not allowed to use any built-in function which evaluates strings as mathematical expressions, such as eval().
+
+ 
+
+Example 1:
+
+Input: s = "1 + 1"
+Output: 2
+
+Example 2:
+
+Input: s = " 2-1 + 2 "
+Output: 3
+
+Example 3:
+
+Input: s = "(1+(4+5+2)-3)+(6+8)"
+Output: 23
+
+ 
+
+Constraints:
+
+    1 <= s.length <= 3 * 105
+    s consists of digits, '+', '-', '(', ')', and ' '.
+    s represents a valid expression.
+    '+' is not used as a unary operation (i.e., "+1" and "+(2 + 3)" is invalid).
+    '-' could be used as a unary operation (i.e., "-1" and "-(2 + 3)" is valid).
+    There will be no two consecutive operators in the input.
+    Every number and running calculation will fit in a signed 32-bit integer.
+
+
+Solution:-
+
+class Solution {
+    public int calculate(String s) {
+        Stack<Integer> st = new Stack<>();
+        // initial sign assume as +ve so take 1
+        int number = 0, sign = 1, result = 0;
+        int n = s.length();
+        char ch[] = s.toCharArray();
+        for(int i = 0; i < n; i++){
+            if(Character.isDigit(ch[i])){
+                // make number
+                number = (number * 10) + (ch[i] -'0');
+            }else if(ch[i] == '+'){
+                result += (number * sign);
+                sign = 1;
+                // since stored number in res so make it zero
+                number = 0;
+            }else if(ch[i] == '-'){
+                result += (number * sign);
+                sign = -1;
+                number = 0;
+            }else if(ch[i] == '('){
+                st.push(result); // store previous res i.e res till now
+                st.push(sign); // store sign before bracket
+                // since stored res and sign in stack, so make res = 0, number = 0, sign = 1 as inside bracket new operation will start from freah
+                number = 0;
+                sign = 1;
+                result = 0;
+            }else if(ch[i] == ')'){
+                result += (number * sign);
+                number = 0;
+                int stackSign = st.pop();
+                result *= stackSign;
+                int lastRes = st.pop();
+                result += lastRes;
+            }
+        }
+        //  last number will remain in number, so add it in result
+        // ex - 1 + 2
+        // 2 will remain stored in number as there i will become > n, so it will come out of loop
+        result += (number * sign);
+        return result;
+    }
+}
