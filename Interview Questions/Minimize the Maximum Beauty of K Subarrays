@@ -1,0 +1,70 @@
+Given an array, divide it into k contiguous non-empty subarrays. The beauty of a subarray is defined as:
+beauty = max_element × length
+For each split, compute the maximum beauty among the k subarrays. Among all such splits, return the minimum possible maxium beauty.
+
+Example - nums= [1, 2, 3, 4, 5], k = 3
+output = 8
+
+Solution:-
+
+// TC - O(n × log(maxBeauty)) where n = length of array and maxBeauty = sum(nums) * n
+import java.util.Arrays;
+
+//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+public class Main {
+
+    public static void main(String[] args) {
+        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
+        // to see how IntelliJ IDEA suggests fixing it.
+        int[] nums = {1, 2, 3, 4, 5};
+        int k = 3;
+        System.out.println(minimizeMaximumBeauty(nums, k)); // 8
+    }
+
+    public static int minimizeMaximumBeauty(int nums[], int k){
+        // Binary search for the minimum maximum beauty
+        int low = Arrays.stream(nums).max().getAsInt(); // Minimum beauty (highest element in the array)
+        int high = Arrays.stream(nums).sum() * nums.length;       // Maximum beauty (maximum possible product)
+        int result = high;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+
+            if (isValid(mid, nums, k)) {
+                result = mid; // Update result since mid is a valid maximum beauty
+                high = mid - 1; // Try to find a smaller valid maximum beauty
+            } else {
+                low = mid + 1; // Increase the lower bound to find a valid maximum beauty
+            }
+        }
+
+        return result;
+    }
+
+
+    // Helper function to check if a given maximum beauty is valid
+    public static boolean isValid(int maxBeauty, int[] nums, int k) {
+        int subarrays = 0;
+        int currentMax = Integer.MIN_VALUE;
+        int length = 0;
+
+        for (int num : nums) {
+            currentMax = Math.max(currentMax, num);
+            length++;
+
+            // If the beauty of the current subarray exceeds maxBeauty, create a new subarray
+            if (currentMax * length > maxBeauty) {
+                subarrays++;
+                currentMax = num;
+                length = 1; // Start the new subarray with this element
+            }
+        }
+
+        // Add the last subarray
+        subarrays++;
+
+        return subarrays <= k;
+    }
+
+}
