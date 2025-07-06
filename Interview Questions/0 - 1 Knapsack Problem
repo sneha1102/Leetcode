@@ -1,0 +1,161 @@
+Given n items, each with a specific weight and value, and a knapsack with a capacity of W, the task is to put the items in the knapsack such that the sum of weights of the items <= W and the sum of values associated with them is maximized. 
+
+Note: You can either place an item entirely in the bag or leave it out entirely. Also, each item is available in single quantity.
+
+Examples :
+
+Input: W = 4, val[] = [1, 2, 3], wt[] = [4, 5, 1] 
+Output: 3
+Explanation: Choose the last item, which weighs 1 unit and has a value of 3.
+
+Input: W = 3, val[] = [1, 2, 3], wt[] = [4, 5, 6] 
+Output: 0
+Explanation: Every item has a weight exceeding the knapsack's capacity (3).
+
+Input: W = 5, val[] = [10, 40, 30, 50], wt[] = [5, 4, 2, 3] 
+Output: 80
+Explanation: Choose the third item (value 30, weight 2) and the last item (value 50, weight 3) for a total value of 80.
+
+Constraints:
+2 ≤ val.size() = wt.size() ≤ 103
+1 ≤ W ≤ 103
+1 ≤ val[i] ≤ 103
+1 ≤ wt[i] ≤ 103
+
+Solution:-
+
+class Solution {
+    // recursion
+    // tc - O(N ^ 2), SC - O(N)
+    /**
+    static int knapsack(int W, int val[], int wt[]) {
+        // code here
+        return f(W, val, wt, wt.length - 1);
+    }
+    private static int f(int w, int val[], int wt[], int ind){
+        // base case
+        if(ind == 0){
+            // if w is > wt[0] than take the 0th index value
+            if(w >= wt[0]){
+                return val[0];
+            }
+            return 0;
+        }
+        // not take
+        int nt = 0 + f(w, val, wt, ind - 1);
+        // take
+        int t = Integer.MIN_VALUE;
+        if(w >= wt[ind]){
+            t = val[ind] + f(w - val[ind], val, wt, ind - 1);
+        }
+        return Math.max(nt, t);
+        
+    }
+    */
+    // memoization, TC - O(N * W), SC - O(N * W)
+    /**
+    static int knapsack(int W, int val[], int wt[]) {
+        int dp[][] = new int[wt.length][W + 1];
+        for (int i = 0; i < wt.length; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+        return f(W, val, wt, wt.length - 1, dp);
+    }
+    
+    private static int f(int w, int val[], int wt[], int ind, int dp[][]) {
+        // Base Case
+        if (ind == 0) {
+            if (w >= wt[0]) {
+                return val[0];
+            }
+            return 0;
+        }
+    
+        // Check if this subproblem is already solved
+        if (dp[ind][w] != -1) {
+            return dp[ind][w];
+        }
+    
+        // Not Take
+        int nt = 0 + f(w, val, wt, ind - 1, dp);
+    
+        // Take
+        int t = 0;
+        if (w >= wt[ind]) {
+            t = val[ind] + f(w - wt[ind], val, wt, ind - 1, dp);
+        }
+    
+        // Memoize and Return Maximum of Take and Not-Take
+        return dp[ind][w] = Math.max(nt, t);
+    }
+    */
+    
+    // tabulation 
+    // TC - O(N * W), SC - O(N * W)
+    /**
+    static int knapsack(int W, int val[], int wt[]) {
+    int dp[][] = new int[wt.length][W + 1];
+
+    // Base Case: Only index 0
+    for (int weight = 0; weight <= W; weight++) {
+        if (wt[0] <= weight) {
+            dp[0][weight] = val[0];
+        } else {
+            dp[0][weight] = 0;
+        }
+    }
+
+    // Fill DP Table for other indices
+    for (int i = 1; i < wt.length; i++) {
+        for (int weight = 0; weight <= W; weight++) {
+            // Not Take
+            int nt = dp[i - 1][weight];
+            // Take
+            int t = 0;
+            if (weight >= wt[i]) { // Current item's weight fits
+                t = val[i] + dp[i - 1][weight - wt[i]];
+            }
+            dp[i][weight] = Math.max(nt, t); // Take the maximum
+        }
+    }
+
+    // Return the last cell which contains the answer
+    return dp[wt.length - 1][W];
+    }
+    */
+
+
+    // space optimisation
+    // TC - O(N * W), SC - O(2W)
+    static int knapsack(int W, int val[], int wt[]) {
+    int prev[] = new int[W + 1];
+    int curr[] = new int[W + 1];
+
+    // Base Case: Only index 0
+    for (int weight = 0; weight <= W; weight++) {
+        if (wt[0] <= weight) {
+            prev[weight] = val[0];
+        }
+    }
+
+    // Fill DP Table for other items
+    for (int i = 1; i < wt.length; i++) {
+        for (int weight = 0; weight <= W; weight++) {
+            // Not Take
+            int nt = prev[weight];
+            // Take
+            int t = 0;
+            if (weight >= wt[i]) { // Current item's weight fits
+                t = val[i] + prev[weight - wt[i]];
+            }
+            curr[weight] = Math.max(nt, t); // Update curr array
+        }
+
+        // Copy curr into prev instead of referencing directly
+        prev = curr.clone();
+    }
+
+    // Return result from prev array
+    return prev[W];
+}
+}
