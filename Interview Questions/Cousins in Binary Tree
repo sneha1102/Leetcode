@@ -1,0 +1,139 @@
+Given the root of a binary tree with unique values and the values of two different nodes of the tree x and y, return true if the nodes corresponding to the values x and y in the tree are cousins, or false otherwise.
+
+Two nodes of a binary tree are cousins if they have the same depth with different parents.
+
+Note that in a binary tree, the root node is at the depth 0, and children of each depth k node are at the depth k + 1.
+
+ 
+
+Example 1:
+
+Input: root = [1,2,3,4], x = 4, y = 3
+Output: false
+
+Example 2:
+
+Input: root = [1,2,3,null,4,null,5], x = 5, y = 4
+Output: true
+
+Example 3:
+
+Input: root = [1,2,3,null,4], x = 2, y = 3
+Output: false
+
+ 
+
+Constraints:
+
+    The number of nodes in the tree is in the range [2, 100].
+    1 <= Node.val <= 100
+    Each node has a unique value.
+    x != y
+    x and y are exist in the tree.
+
+
+Solution:-
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+
+/**
+// BFS approach 
+// TC - O(N), SC - O(N)
+class Solution {
+    public boolean isCousins(TreeNode root, int x, int y) {
+        if (root == null) return false; // Base case for null tree
+        if (root.val == x || root.val == y) return false; // Root cannot be cousin
+        
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            int size = queue.size(); // Size of the current level (to handle level-by-level logic)
+
+            TreeNode xParent = null, yParent = null; // Track the parent nodes at the same level
+            
+            // Process all nodes in the current level
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll(); // Poll one node
+                
+                // Check left child
+                if (node.left != null) {
+                    queue.add(node.left);
+                    if (node.left.val == x) xParent = node; // Record x's parent
+                    if (node.left.val == y) yParent = node; // Record y's parent
+                }
+
+                // Check right child
+                if (node.right != null) {
+                    queue.add(node.right);
+                    if (node.right.val == x) xParent = node; // Record x's parent
+                    if (node.right.val == y) yParent = node; // Record y's parent
+                }
+            }
+
+            // After processing the level: check if x and y are cousins
+            if (xParent != null && yParent != null) {
+                return xParent != yParent; // Same level, different parents -> cousins!
+            }
+
+            // If only one of xParent or yParent is found, they cannot be cousins
+            if ((xParent != null && yParent == null) || (xParent == null && yParent != null)) {
+                return false;
+            }
+        }
+
+        return false; // If the nodes are never found
+    }
+}
+**/
+// DFS approach
+// TC - O(N), SC - O(N)
+class Solution {
+    private TreeNode xParent = null, yParent = null; // Track parents of x and y
+    private int xDepth = -1, yDepth = -1;           // Track depths of x and y
+    
+    public boolean isCousins(TreeNode root, int x, int y) {
+        if (root == null) return false; // Base case
+        
+        // Start DFS from the root, with an initial depth of 0 and no parent
+        dfs(root, null, 0, x, y);
+        
+        // Cousins if they are at the same depth but have different parents
+        return xDepth == yDepth && xParent != yParent;
+    }
+    
+    private void dfs(TreeNode node, TreeNode parent, int depth, int x, int y) {
+        if (node == null) return; // Base case: stop when node is null
+        
+        // Check if current node is x or y
+        if (node.val == x) {
+            xParent = parent;  // Record x's parent
+            xDepth = depth;    // Record x's depth
+        }
+        if (node.val == y) {
+            yParent = parent;  // Record y's parent
+            yDepth = depth;    // Record y's depth
+        }
+        
+        // If both x and y have been found, no need to search further
+        if (xParent != null && yParent != null) return;
+        
+        // Recursively traverse the left and right subtrees
+        dfs(node.left, node, depth + 1, x, y);
+        dfs(node.right, node, depth + 1, x, y);
+    }
+}
