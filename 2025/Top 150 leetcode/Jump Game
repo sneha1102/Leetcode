@@ -25,16 +25,89 @@ Constraints:
 
 
 Solution:-
+
 class Solution {
+    // approach -1 
+    // recursion
+    /**
+    public boolean canJump(int[] nums) {
+        return solve(0, nums, nums.length);
+    }
+    private boolean solve(int idx, int nums[], int n){
+        if(idx == n - 1){
+            return true;
+        }
+        for(int i = 1; i <= nums[idx]; i++){
+            if(solve(idx + i, nums, n) == true){
+                return true;
+            }
+        }
+        return false;
+    }
+    */
+
+    // approach - 2
+    // memoization
+    /**
+    public boolean canJump(int[] nums) {
+        int dp[] = new int[nums.length];
+        Arrays.fill(dp, -1);
+        return solve(0, nums, nums.length, dp);
+    }
+    private boolean solve(int idx, int nums[], int n, int dp[]){
+        if(idx == n - 1){
+            return true;
+        }
+        if(dp[idx] != -1){
+            return dp[idx] == 1 ? true: false;
+        }
+        for(int i = 1; i <= nums[idx]; i++){
+            if(solve(idx + i, nums, n, dp) == true){
+                dp[idx] = 1;
+                return true;
+            }
+        }
+        
+        dp[idx] = 0;
+        return false;
+    }
+    */
+
+    // approach - 3
+    // tabulation - TC - O(N^2)
+    /**
+    public boolean canJump(int[] nums) {
+        return solve(0, nums, nums.length);
+    }
+    private boolean solve(int idx, int nums[], int n){
+        boolean dp[] = new boolean[n];
+        Arrays.fill(dp, false);
+        dp[0] = true;
+        
+        for(int i = 1; i < n; i++){
+            // check if we can reach to i via any possible path from j(previous indexes)
+            for(int j = i - 1; j >= 0; j--){
+                if(dp[j] == true && i <= j + nums[j]){
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        
+        return dp[n - 1];
+    }
+    */
+
     public boolean canJump(int[] nums) {
         int n = nums.length;
-        int steps_left = 0;
+        int maxReachable = 0;
         for(int i = 0; i < n; i++){
-            steps_left--;
-            steps_left = Math.max(steps_left, nums[i]);
-            if(steps_left == 0){
-                return i == n - 1;
+            // if anytime i exceeds maxReachable means not possible to reach n - 1 as maxReachable is less that required jump
+            if(i > maxReachable){
+                return false;
             }
+            // update the maxReachable from current index
+            maxReachable = Math.max(maxReachable, nums[i] + i);
         }
         return true;
     }
