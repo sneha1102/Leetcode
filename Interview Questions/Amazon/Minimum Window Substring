@@ -1,0 +1,91 @@
+Given two strings s and t of lengths m and n respectively, return the minimum window
+
+of s such that every character in t (including duplicates) is included in the window. If there is no such substring, return the empty string "".
+
+The testcases will be generated such that the answer is unique.
+
+ 
+
+Example 1:
+
+Input: s = "ADOBECODEBANC", t = "ABC"
+Output: "BANC"
+Explanation: The minimum window substring "BANC" includes 'A', 'B', and 'C' from string t.
+
+Example 2:
+
+Input: s = "a", t = "a"
+Output: "a"
+Explanation: The entire string s is the minimum window.
+
+Example 3:
+
+Input: s = "a", t = "aa"
+Output: ""
+Explanation: Both 'a's from t must be included in the window.
+Since the largest window of s only has one 'a', return empty string.
+
+ 
+
+Constraints:
+
+    m == s.length
+    n == t.length
+    1 <= m, n <= 105
+    s and t consist of uppercase and lowercase English letters.
+
+Solution:-
+// TC - O(S + T), SC - O(T)
+class Solution {
+    public String minWindow(String s, String t) {
+        // Early return conditions
+        if(s.length() == 0 || s.length() < t.length()){
+            return "";
+        }
+        HashMap<Character, Integer> m = new HashMap<>();
+        // Populate the map with characters from string t
+        for(char c: t.toCharArray()){
+            if(m.containsKey(c)){
+                m.put(c, m.get(c) + 1);
+            }else{
+                m.put(c, 1);
+            }
+        }
+        int count = 0;
+        int minLen = Integer.MAX_VALUE;
+        int minLeft = 0;
+        int start = 0;
+
+        for(int end = 0; end < s.length(); end++){
+            // If current char of s is needed to form t
+            if(m.containsKey(s.charAt(end))){
+                m.put(s.charAt(end), m.get(s.charAt(end)) - 1);
+                // Increment count only when the character from t is completely matched in s
+                if(m.get(s.charAt(end)) >= 0){
+                    count++;
+                }
+            }
+            // Keep shrinking the window until the window doesn't satisfy t anymore
+            while(count == t.length()){
+                // Update the window size if a smaller valid window is found
+                if(minLen > end - start + 1){
+                    minLen = end - start + 1;
+                    minLeft = start;
+                }
+                // Attempt to remove a character from the left of the window
+                if(m.containsKey(s.charAt(start))){
+                    m.put(s.charAt(start), m.get(s.charAt(start)) + 1);
+                    // Decrement count if a needed character count has now become positive
+                    if(m.get(s.charAt(start)) > 0){
+                        count--;
+                    }
+                }
+                start++;
+            }
+        }
+        if(minLen > s.length()){
+            return "";
+        }
+        return s.substring(minLeft, minLeft + minLen);
+    }
+}
