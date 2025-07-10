@@ -1,0 +1,103 @@
+Given a string containing just the characters '(' and ')', return the length of the longest valid (well-formed) parentheses
+
+.
+
+ 
+
+Example 1:
+
+Input: s = "(()"
+Output: 2
+Explanation: The longest valid parentheses substring is "()".
+
+Example 2:
+
+Input: s = ")()())"
+Output: 4
+Explanation: The longest valid parentheses substring is "()()".
+
+Example 3:
+
+Input: s = ""
+Output: 0
+
+ 
+
+Constraints:
+
+    0 <= s.length <= 3 * 104
+    s[i] is '(', or ')'.
+
+Solution:-
+
+class Solution {
+    // approach - 1
+    // stack, TC - O(N), SC - O(N)
+    /**
+    public int longestValidParentheses(String s) {
+        Stack<Integer> st = new Stack<>();
+        // Initialize stack with -1 to handle edge cases
+        st.push(-1);
+        int max = 0;
+        for(int i = 0; i < s.length(); i++){
+            if(s.charAt(i) == '('){
+                // Push index of '(' onto the stack
+                st.push(i);
+            }else{
+                // Pop the top element for a matching ')'
+                st.pop();
+                if(st.isEmpty()){
+                    // Push the current index as base for next valid substring
+                    st.push(i);
+                }else{
+                    max = Math.max(max, i - st.peek());
+                }
+            }
+        }
+        return max;
+    }
+    */
+
+    // TC - O(2N), SC - O(1)
+    public int longestValidParentheses(String s) {
+        int left = 0, right = 0, max = 0;
+        // iterate from left to right to handle sceanrios like ())
+        for(int i = 0; i < s.length(); i++){
+            char ch = s.charAt(i);
+            if(ch == '('){
+                left++;
+            }else{
+                right++;
+            }
+            if(left == right){
+                max = Math.max(max, left + right);
+            }else if(right > left){
+                // if no of right > left then reset left right values
+                left = 0;
+                right = 0;
+            }
+        }
+        left = 0;
+        right = 0;
+
+        // now iterate from right to left to handle scenarios like (()
+        for(int i = s.length() - 1; i >= 0; i--){
+            char ch = s.charAt(i);
+            if(ch == '('){
+                left++;
+            }else{
+                right++;
+            }
+            if(left == right){
+                max = Math.max(max, left + right);
+            }else if(left > right){
+                // if no of right < left then reset left right values
+                left = 0;
+                right = 0;
+            }
+        }
+
+        return max;
+
+    }
+}
