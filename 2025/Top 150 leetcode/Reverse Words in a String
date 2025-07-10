@@ -37,6 +37,7 @@ Constraints:
 Solution:-
 
 // approach - 1
+// TC - O(N), SC - O(1)
 // class Solution {
 //     public String reverseWords(String s) {
 //        // Trim the input string to remove leading and trailing spaces
@@ -58,6 +59,7 @@ Solution:-
 
 // approach - 2, stack, TC - O(N), SC - O(N)
 class Solution {
+    /** 
     public String reverseWords(String s1) {
         StringBuilder str = new StringBuilder();
         Stack<String> s = new Stack<>();
@@ -85,5 +87,45 @@ class Solution {
             if(!s.isEmpty()) s2.append(" ");
         }
         return s2.toString();
+    }
+    */
+
+
+    private String reverseString(String s){
+        char ch[] = s.toCharArray();
+        int l = 0, r = s.length() - 1;
+        while(l <= r){
+            char temp = ch[l];
+            ch[l] = ch[r];
+            ch[r] = temp;
+            l++;
+            r--;
+        }
+        return new String(ch);
+    }
+    // TC - O(N), SC - O(N)
+    public String reverseWords(String s2) {
+       // reverse strings 
+       String s1 = s2.trim();
+       String rev = reverseString(s1);
+       int l = 0, r = 0;
+       StringBuilder str = new StringBuilder(); 
+       while(r < rev.length()){
+            if(rev.charAt(r) == ' '){
+                // space found
+                str.append(reverseString(rev.substring(l, r)));
+                str.append(" ");
+                // Skip consecutive spaces
+                while (r < rev.length() && rev.charAt(r) == ' ') {
+                    r++;
+                }
+                // Update the left pointer to the new start of the word
+                l = r;
+            }
+            r++;
+       }
+       // append the last word
+       str.append(reverseString(rev.substring(l, r)));
+       return str.toString();
     }
 }
