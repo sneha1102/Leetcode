@@ -1,0 +1,53 @@
+sum of the first n smallest numbers in O(1) time
+
+Solution:-
+
+import java.util.Collections;
+import java.util.PriorityQueue;
+
+//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+public class Main {
+    int sum = 0;
+    int n = 3;
+    PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+
+    // TC- O(log n)
+    public void addNumber(int num){
+        if(maxHeap.size() < n){
+            maxHeap.add(num);
+            sum += num;
+        }else{
+            if(maxHeap.peek() > num){
+                // make space for new num in maxheap
+                int largestinMax = maxHeap.poll();
+                sum -= largestinMax;
+                minHeap.add(largestinMax);
+
+                maxHeap.add(num);
+                sum += num;
+            }else{
+                minHeap.add(num);
+            }
+        }
+    }
+
+    // TC -O(1)
+    public long getSumOfNsmallest() {
+        return sum;
+    }
+    public static void main(String[] args) {
+        Main main = new Main();
+        main.addNumber(10);
+        main.addNumber(4);
+        main.addNumber(3);
+        main.addNumber(2);
+        main.addNumber(1);
+        main.addNumber(5);
+        System.out.println(main.getSumOfNsmallest());
+
+
+
+    }
+}
