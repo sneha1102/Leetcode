@@ -1,0 +1,111 @@
+Given a binary tree, connect the nodes that are at the same level. You'll be given an addition nextRight pointer for the same.
+
+Initially, all the next right pointers point to garbage values. Your function should set these pointers to the point next right for each node.
+       10                       10 ------> NULL
+      / \                       /      \
+     3   5       =>     3 ------> 5 --------> NULL
+    / \     \               /  \           \
+   4   1   2          4 --> 1 -----> 2 -------> NULL
+
+ 
+
+Examples:
+
+Input:
+     3
+   /  \
+  1    2
+Output:
+[3, 1, 2]
+[1, 3, 2]
+Explanation:The connected tree is
+        3 ------> NULL
+     /    \
+    1-----> 2 ------ NULL
+
+Input:
+      10
+    /   \
+   20   30
+  /  \
+ 40  60
+Output:
+[10, 20, 30, 40, 60]
+[40, 20, 60, 10, 30]
+Explanation:The connected tree is
+         10 ----------> NULL
+       /     \
+     20 ------> 30 -------> NULL
+  /    \
+ 40 ----> 60 ----------> NULL
+
+Input:
+       15
+     /  \
+    10   20
+   / \   / \
+  8   12 18 25
+
+Output:
+[15, 10, 20, 8, 12, 18, 25]
+[8, 10, 12, 15, 18, 20, 25]
+Explanation:The connected tree is
+         15 ----------> NULL
+       /    \
+     10 ------> 20 --------> NULL
+    /  \        /  \
+   8 --> 12 -->18 --> 25 --> NULL
+
+ 
+
+Constraints:
+1 ≤ number of nodes ≤ 105
+0 ≤ node->data ≤ 105
+
+Solution:-
+
+/*
+   Node class is Defined as follows:
+   class Node{
+       int data;
+       Node left;
+       Node right;
+       Node nextRight;
+       Node(int data){
+           this.data = data;
+           left=null;
+           right=null;
+           nextRight = null;
+       }
+   }
+   */
+// TC - O(N), SC - O(W) where W = width of binary tree, worst case W = N
+class Solution {
+    // Function to connect nodes at same level.
+    public Node connect(Node root) {
+        // Your code goes here.
+        Node temp = root;
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+        while(!q.isEmpty()){
+            int size = q.size();
+            int s = size;
+            Node node = null;
+            for(int i = 0; i < size; i++){
+                node = q.poll();
+                if(s > 0){
+                    node.nextRight = q.peek();
+                    s--;
+                }
+                if(node.left != null){
+                    q.add(node.left);
+                }
+                if(node.right != null){
+                    q.add(node.right);
+                }
+            }
+            node.nextRight = null;
+        }
+        return temp;
+    }
+}
