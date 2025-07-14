@@ -1,0 +1,74 @@
+The problem given was to reorganize a string so that no two same characters are next to each other.
+
+Example :-
+s = "aab"
+output - "aba"
+
+Solution:-
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.PriorityQueue;
+
+//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
+// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+// Tc - O(n + k * log(k) + n * log(k)), SC - O(n + k) where n = length of string, k =unique characters in string
+public class Main {
+    static class CharFreq{
+        char ch;
+        int freq;
+
+        public CharFreq(char ch, int freq) {
+            this.ch = ch;
+            this.freq = freq;
+        }
+
+        public char getCh() {
+            return ch;
+        }
+
+        public int getFreq() {
+            return freq;
+        }
+
+        public void setFreq(int freq) {
+            this.freq = freq;
+        }
+    }
+    public static void main(String[] args) {
+        String s = "aabbc";
+        System.out.println(reorganize(s));
+
+    }
+
+    private static String reorganize(String s){
+        Map<Character, Integer> freqMap = new HashMap<>();
+        // store the freq
+        for(int i = 0; i < s.length(); i++){
+            freqMap.put(s.charAt(i), freqMap.getOrDefault(s.charAt(i), 0) + 1);
+        }
+        // max heap
+        PriorityQueue<CharFreq> pq = new PriorityQueue<>((a, b) -> b.freq - a.freq);
+        // store chars in max heap
+        for(Map.Entry<Character, Integer> entry: freqMap.entrySet()){
+            pq.add(new CharFreq(entry.getKey(), entry.getValue()));
+        }
+        StringBuilder res = new StringBuilder();
+        CharFreq prev = null;
+        while(!pq.isEmpty()){
+            CharFreq current = pq.poll();
+            res.append(current.getCh());
+            current.setFreq(current.getFreq() - 1);
+
+            if(prev != null && prev.getFreq() > 0){
+                pq.add(new CharFreq(prev.getCh(), prev.getFreq()));
+            }
+            prev = current;
+        }
+        if(res.toString().length() != s.length()){
+            return "";
+        }
+        return res.toString();
+
+    }
+}
