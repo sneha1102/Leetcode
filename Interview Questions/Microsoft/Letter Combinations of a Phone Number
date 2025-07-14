@@ -1,0 +1,75 @@
+Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order.
+
+A mapping of digits to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.
+
+ 
+
+Example 1:
+
+Input: digits = "23"
+Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+
+Example 2:
+
+Input: digits = ""
+Output: []
+
+Example 3:
+
+Input: digits = "2"
+Output: ["a","b","c"]
+
+ 
+
+Constraints:
+
+    0 <= digits.length <= 4
+    digits[i] is a digit in the range ['2', '9'].
+
+
+Solution:-
+
+class Solution {
+    // backtracking
+    // TC - O(4 ^ N * N)
+    // SC - recursion stack
+    List<String> res = new ArrayList<>();
+     Map<Character, String> m = new HashMap<>();
+;    public List<String> letterCombinations(String digits) {
+        if(digits.length() == 0){
+            return new ArrayList<>();
+        }
+       
+        m.put('2', "abc");
+        m.put('3', "def");
+        m.put('4', "ghi");
+        m.put('5', "jkl");
+        m.put('6', "mno");
+        m.put('7', "pqrs");
+        m.put('8', "tuv");
+        m.put('9', "wxyz");
+        solve(0, digits, new StringBuilder());
+        return res;
+    }
+
+    private void solve(int idx, String s, StringBuilder temp){
+        if(idx >= s.length()){
+            res.add(temp.toString());
+            return;
+        }
+        // fetch char i.e number from input string
+        char ch = s.charAt(idx);
+        // fetch corresponding string from map
+        String str = m.get(ch);
+        // check for all possible combination of str
+        for(int i = 0; i < str.length(); i++){
+            // do
+            temp.append(str.charAt(i));
+            // check for next number
+            solve(idx + 1, s, temp);
+            // undo
+            temp.deleteCharAt(temp.length() - 1);
+        }
+
+    }
+}
