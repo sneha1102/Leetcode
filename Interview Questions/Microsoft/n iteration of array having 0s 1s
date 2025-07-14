@@ -1,0 +1,53 @@
+An array of 0s and 1s, where on each iteration array[i] becomes 1 if its left and right neighbors are the same, and 0 otherwise; after n iterations, find the final array state. We talked about naïve approaches vs. optimization (handling large n, periodicity, and edge cases for array[0] and array[n-1]).
+
+Solution:-
+
+import java.util.Arrays;
+
+public class Array01to1 {
+    // brute force
+//    private static int[] findFinalState(int arr[], int n){
+//        for(int i = 0; i < n; i++){
+//            for(int j = 1; j < arr.length - 1; j++){
+//                arr[j] = (arr[j - 1] == arr[j + 1]) ? 1: 0;
+//            }
+//        }
+//        return arr;
+//    }
+//    public static void main(String[] args) {
+//        int[] array = {0, 1, 0, 1, 0, 0, 1};
+//        int n = 4;
+//
+//        int[] result = findFinalState(array, n);
+//        System.out.println("Final Array State: " + Arrays.toString(result));
+//    }
+
+    // TC - O(N * M), SC - O(M)
+    private static int[] findFinalState(int arr[], int n){
+        int m = arr.length;
+        int curr[] = Arrays.copyOf(arr, m);
+        int next[] = new int[m];
+        for(int i = 0; i < n; i++) {
+            for (int j = 1; j < m - 1; j++) {
+                next[j] = (curr[j - 1] == curr[j + 1]) ? 1 : 0;
+            }
+            System.out.println("state: i = " + i + " " + Arrays.toString(curr));
+            if (Arrays.equals(curr, next)) {
+                break;
+            }
+            curr = Arrays.copyOf(next, m);
+        }
+        return curr;
+    }
+    public static void main(String[] args) {
+        int[] array = {0, 1, 0, 1, 0, 0, 1};
+        int n = 2;
+
+        int[] result = findFinalState(array, n);
+        System.out.println("Final Array State: " + Arrays.toString(result));
+    }
+
+}
+
+
+
