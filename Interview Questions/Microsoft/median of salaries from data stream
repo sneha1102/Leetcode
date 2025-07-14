@@ -1,0 +1,68 @@
+inserting a salary into a data stream and calculating the median after each insertion
+oncurrency issues  for multiple threads inserting salaries simultaneously.
+
+Solution:-
+
+// TC - O(log n) (for insertion and balancing heaps), SC - O(N)
+import java.util.PriorityQueue;
+
+public class Find_median_salaries {
+        private PriorityQueue<Double> maxHeap, minHeap;
+
+        public Find_median_salaries() {
+           maxHeap = new PriorityQueue<>((a, b) -> Double.compare(b, a));
+           minHeap = new PriorityQueue<>();
+        }
+        public void addSalary(double sal){
+            synchronized (this) {
+                if (maxHeap.isEmpty() || maxHeap.peek() >= sal) {
+                    maxHeap.add(sal);
+                } else {
+                    minHeap.add(sal);
+                }
+                if (maxHeap.size() > minHeap.size() + 1) {
+                    minHeap.add(maxHeap.poll());
+                } else if (maxHeap.size() < minHeap.size()) {
+                    maxHeap.add(minHeap.poll());
+                }
+            }
+
+        }
+        public double findMedian(){
+            synchronized (this) {
+                if (!maxHeap.isEmpty()) {
+                    if (maxHeap.size() == minHeap.size()) {
+                        return (maxHeap.peek() + minHeap.peek()) / 2.0;
+                    } else {
+                        return maxHeap.peek();
+                    }
+                }
+                return -1;
+            }
+        }
+
+
+    public static void main(String[] args) {
+        Find_median_salaries salaries = new Find_median_salaries();
+        Runnable task1 = () -> {
+            double sal1 = 1200.0;
+            salaries.addSalary(sal1);
+        };
+
+        Thread t1 = new Thread(task1);
+        Thread t2 = new Thread(() -> salaries.addSalary(1100.0));
+        Thread t3 = new Thread(() -> salaries.addSalary(1000.0));
+
+        t1.start();;
+        t2.start();
+        t3.start();
+        try{
+            t1.join();
+            t2.join();
+            t3.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(salaries.findMedian());
+    }
+}
