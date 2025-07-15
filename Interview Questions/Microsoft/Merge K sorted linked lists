@@ -1,0 +1,134 @@
+Given an array arr[] of n sorted linked lists of different sizes. The task is to merge them in such a way that after merging they will be a single sorted linked list, then return the head of the merged linked list.
+
+Examples:
+
+Input: arr[] = [1 -> 2 -> 3, 4 -> 5, 5 -> 6, 7 -> 8]
+Output: 1 -> 2 -> 3 -> 4 -> 5 -> 5 -> 6 -> 7 -> 8
+Explanation:
+The arr[] has 4 sorted linked list of size 3, 2, 2, 2.
+1st list: 1 -> 2-> 3
+2nd list: 4 -> 5
+3rd list: 5 -> 6
+4th list: 7 -> 8
+The merged list will be:
+ 
+
+Input: arr[] = [1 -> 3, 8, 4 -> 5 -> 6]
+Output: 1 -> 3 -> 4 -> 5 -> 6 -> 8
+Explanation:
+The arr[] has 3 sorted linked list of size 2, 3, 1.
+1st list: 1 -> 3
+2nd list: 8
+3rd list: 4 -> 5 -> 6
+The merged list will be:
+
+Constraints
+1 <= total no. of nodes <= 105
+1 <= node->data <= 103
+
+Solution:-
+
+/*class Node
+{
+    int data;
+    Node next;
+
+    Node(int key)
+    {
+        data = key;
+        next = null;
+    }
+}
+*/
+
+
+
+// arr is an array of Nodes of the heads of linked lists
+// Approach - 1
+// priority queue
+// TC - O(N + K) Log K where K = no of LL, N = no of nodes in all LL
+// SC - O(K)
+/**
+class Solution {
+    class Pair{
+        int nodeVal;
+        Node node;
+        Pair(int n, Node node){
+            this.nodeVal = n;
+            this.node = node;
+        }
+    }
+    // Function to merge K sorted linked list.
+    Node mergeKLists(List<Node> arr) {
+        // Add your code here.
+        PriorityQueue<Pair> pq = new PriorityQueue<>((a, b) -> (a.nodeVal - b.nodeVal));
+        for(Node head: arr){
+           pq.add(new Pair(head.data, head)); 
+        }
+        Node dummy = new Node(-1);
+        Node temp = dummy;
+        while(!pq.isEmpty()){
+            Pair p = pq.poll();
+            Node curr = p.node;
+            temp.next = curr;
+            if(curr.next != null){
+                pq.add(new Pair(curr.next.data, curr.next));
+            }
+            temp = temp.next;
+        }
+        return dummy.next;
+        
+    }
+}
+*/
+// approach - 2
+// TC -O(N Log K) 
+// N is the total number of nodes across all lists.
+// K is the number of linked lists.
+// SC - O(1)
+class Solution {
+    // Function to merge K sorted linked list.
+    Node mergeKLists(List<Node> arr) {
+        // Add your code here.
+        if (arr == null || arr.size() == 0) {
+            return null;
+        }
+        if (arr.size() == 1) {
+            return arr.get(0);
+        }
+        int interval = 1;
+        while(interval < arr.size()){
+            for(int i = 0; i + interval < arr.size(); i = i + interval * 2){
+                arr.set(i, mergeTwoLL(arr.get(i), arr.get(i + interval)));
+            }
+        interval = 2 * interval;
+        }
+        return arr.get(0);
+    }
+    // TC - O(N)
+    Node mergeTwoLL(Node l1, Node l2){
+        if(l1 == null){
+            return l2;
+        }
+        if(l2 == null){
+            return l1;
+        }
+        Node dummy = new Node(-1), temp = dummy;
+        while(l1 != null && l2 != null){
+            if(l1.data > l2.data){
+                temp.next = l2;
+                l2 = l2.next;
+            }else{
+                temp.next = l1;
+                l1 = l1.next;
+            }
+            temp = temp.next;
+        }
+        if(l1 != null){
+            temp.next = l1;
+        }else{
+            temp.next = l2;
+        }
+        return dummy.next;
+    }
+}
