@@ -1,0 +1,206 @@
+Given two strings s and t, return the number of distinct subsequences of s which equals t.
+
+The test cases are generated so that the answer fits on a 32-bit signed integer.
+
+ 
+
+Example 1:
+
+Input: s = "rabbbit", t = "rabbit"
+Output: 3
+Explanation:
+As shown below, there are 3 ways you can generate "rabbit" from s.
+rabbbit
+rabbbit
+rabbbit
+
+Example 2:
+
+Input: s = "babgbag", t = "bag"
+Output: 5
+Explanation:
+As shown below, there are 5 ways you can generate "bag" from s.
+babgbag
+babgbag
+babgbag
+babgbag
+babgbag
+
+ 
+
+Constraints:
+
+    1 <= s.length, t.length <= 1000
+    s and t consist of English letters.
+
+
+
+Solution:-
+
+class Solution {
+    // TC - O(2^(n + m), SC = O(n + m)
+    /**
+    public int numDistinct(String s, String t) {
+        return solve(s.length() - 1, t.length() - 1, s, t);
+    }
+
+    private int solve(int n, int m, String s, String t) {
+        if (m < 0) {
+            // Means t string has been matched completely
+            return 1;
+        }
+        if (n < 0) {
+            // Means s has been finished and t has not been matched completely
+            return 0;
+        }
+
+        int res = 0;
+        // Match
+        if (s.charAt(n) == t.charAt(m)) {
+            // Explore both possibilities: take the current matched character and move; 
+            // or skip the current character in s and move only the n pointer.
+            res = solve(n - 1, m - 1, s, t) + solve(n - 1, m, s, t);
+        } else {
+            // If not matched: skip the current character in s and move only the n pointer.
+            res = solve(n - 1, m, s, t);
+        }
+        return res;
+    }
+    */
+
+    // memoization
+    // TC - O(n * m), SC - O(n * m) + O(N + M) - auxiliary space recursion
+    /**
+    public int numDistinct(String s, String t) {
+        int dp[][] = new int[s.length()][t.length()];
+        for(int i = 0; i < s.length(); i++){
+            Arrays.fill(dp[i], -1);
+        }
+        return solve(s.length() - 1, t.length() - 1, s, t, dp);
+    }
+
+    private int solve(int n, int m, String s, String t, int dp[][]) {
+        if (m < 0) {
+            // Means t string has been matched completely
+            return 1;
+        }
+        if (n < 0) {
+            // Means s has been finished and t has not been matched completely
+            return 0;
+        }
+
+        if(dp[n][m] != -1){
+            return dp[n][m];
+        }
+
+        int res = 0;
+        // Match
+        if (s.charAt(n) == t.charAt(m)) {
+            // Explore both possibilities: take the current matched character and move; 
+            // or skip the current character in s and move only the n pointer.
+            res = solve(n - 1, m - 1, s, t, dp) + solve(n - 1, m, s, t, dp);
+        } else {
+            // If not matched: skip the current character in s and move only the n pointer.
+            res = solve(n - 1, m, s, t, dp);
+        }
+        return dp[n][m] = res;
+    }
+    */
+
+    // tabulation
+    // TC - O(n * m), SC - O(n * m)
+    /** 
+    public int numDistinct(String s, String t) {
+        // do 1 based indexing
+        int dp[][] = new int[s.length() + 1][t.length() + 1];
+        for(int i = 0; i <= s.length(); i++){
+            Arrays.fill(dp[i], 0);
+        }
+        return solve(s.length(), t.length(), s, t, dp);
+    }
+
+    private int solve(int n, int m, String s, String t, int dp[][]) {
+        for(int i = 0; i <= n; i++){
+            // Means t string has been matched completely
+            dp[i][0] = 1;
+        }
+
+        // j = 0, already put on previous for loop, so we have to start from j = 1
+        // as we don't want to overwrite
+        for(int j = 1; j <= m; j++){
+            // Means s has been finished and t has not been matched completely
+            dp[0][j] = 0;
+        }
+
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= m; j++){
+                if (s.charAt(i - 1) == t.charAt(j - 1)) {
+                    // Explore both possibilities: take the current matched character and move; 
+                    // or skip the current character in s and move only the n pointer.
+                    dp[i][j] = dp[i - 1][j - 1] + dp[i - 1][j];
+                } else {
+                    // If not matched: skip the current character in s and move only the n pointer.
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[n][m];
+    }
+    */
+
+
+    // space optimisation
+    // TC - O(N * M), SC - O(2M)
+    /**
+    public int numDistinct(String s, String t) {
+        int n = s.length();
+        int m = t.length();
+        // do 1 based indexing
+        int prev[] = new int[m + 1];
+        int curr[] = new int[m + 1];
+        Arrays.fill(prev, 0);
+        Arrays.fill(curr, 0);
+        prev[0] = 1;
+        curr[0] = 1;
+        
+
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= m; j++){
+                if (s.charAt(i - 1) == t.charAt(j - 1)) {
+                    // Explore both possibilities: take the current matched character and move; 
+                    // or skip the current character in s and move only the n pointer.
+                    curr[j] = prev[j - 1] + prev[j];
+                } else {
+                    // If not matched: skip the current character in s and move only the n pointer.
+                    curr[j] = prev[j];
+                }
+            }
+            prev = curr.clone();
+        }
+        return prev[m];
+    }
+    */
+
+    // 1 d optimisation
+    // TC - O(N * M), SC - O(M)
+    public int numDistinct(String s, String t) {
+        int n = s.length();
+        int m = t.length();
+        // do 1 based indexing
+        int prev[] = new int[m + 1];
+        Arrays.fill(prev, 0);
+        prev[0] = 1;        
+
+        for(int i = 1; i <= n; i++){
+            // iterate from m to 11 because prev[j] can be replaced because we don't need this for further computation if doing from back
+            for(int j = m; j > 0; j--){
+                if (s.charAt(i - 1) == t.charAt(j - 1)) {
+                    // Explore both possibilities: take the current matched character and move; 
+                    // or skip the current character in s and move only the n pointer.
+                    prev[j] = prev[j - 1] + prev[j];
+                } 
+            }
+        }
+        return prev[m];
+    }
+}
