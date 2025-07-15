@@ -1,0 +1,121 @@
+Given an array of strings, determine if it's possible to form a chain where each word's last three characters match the first three characters of the next word in the chain. The chain should use all words exactly once. If such a chain exists, return the sequence of words forming the chain; otherwise, return an empty array.
+
+Example 1:
+Input: ["germany", "ginger", "anyfin", "ishita", "finish", "begin"]
+Output: ["begin", "ginger", "germany", "anyfin", "finish", "ishita"]
+Explanation:
+begin -> gin(ger) -> ger(many) -> any(fin) -> fin(ish) -> ish(ita)
+
+Example 2:
+Input: ["hello", "world", "start", "begin", "final"]
+Output: []
+Explanation:
+No valid chain possible as no word's first three letters match with any other word's last three letters.
+
+Example 3:
+Input: ["germany", "ginger", "anyfin", "ishita", "fintsh", "finish", "begin"]
+Output: []
+Explanation:
+Even though a partial chain is possible:
+begin -> gin(ger) -> ger(many) -> any(fin) -> fin(ish) -> ish(ita)
+
+The answer should be [] because:
+
+    Word "fintsh" cannot be included in any valid chain
+    The problem requires ALL words to be used exactly once
+    Since we can't include all words in a single chain, we return an empty array
+
+
+Solution:-
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class WordChain {
+
+    /**
+     * Check if a valid chaining sequence exists for the given array of words.
+     *
+     * @param words Array of words.
+     * @return Sequence of words forming the valid chain; empty list if no chain is possible.
+     */
+    public static List<String> findWordChain(String[] words) {
+        List<String> result = new ArrayList<>();
+
+        // Try to start the chain with every word in the array
+        for (int i = 0; i < words.length; i++) {
+            boolean[] used = new boolean[words.length]; // Track if each word is used
+            List<String> currentChain = new ArrayList<>();
+            currentChain.add(words[i]);
+            used[i] = true;
+
+            if (backtrack(words, used, currentChain)) {
+                return currentChain; // Found a valid chain
+            }
+        }
+
+        return result; // Return empty list if no chain is possible
+    }
+
+    /**
+     * Recursive backtracking to build the chain.
+     *
+     * @param words        Array of words.
+     * @param used         Boolean array to track used words.
+     * @param currentChain Current chain being built.
+     * @return True if a valid chain is found, false otherwise.
+     */
+    private static boolean backtrack(String[] words, boolean[] used, List<String> currentChain) {
+        // Base case: If the chain includes all the words, return true
+        if (currentChain.size() == words.length) {
+            return true;
+        }
+
+        // Get the last word in the current chain
+        String lastWord = currentChain.get(currentChain.size() - 1);
+        String lastThreeChars = lastWord.substring(lastWord.length() - 3);
+
+        // Try to add the next word to the chain
+        for (int i = 0; i < words.length; i++) {
+            if (!used[i]) { // Check if the word is already used
+                String nextWord = words[i];
+                String firstThreeChars = nextWord.substring(0, 3);
+
+                if (lastThreeChars.equals(firstThreeChars)) { // Matching condition
+                    // Mark the word as used and add it to the chain
+                    used[i] = true;
+                    currentChain.add(nextWord);
+
+                    // Recursively try to build the chain
+                    if (backtrack(words, used, currentChain)) {
+                        return true; // Found valid chain
+                    }
+
+                    // Backtrack: Remove the word and unmark it as used
+                    currentChain.remove(currentChain.size() - 1);
+                    used[i] = false;
+                }
+            }
+        }
+
+        return false; // No valid word found for the chain
+    }
+
+    // Helper function to test the code
+    public static void main(String[] args) {
+        String[] example1 = {"germany", "ginger", "anyfin", "ishita", "finish", "begin"};
+        String[] example2 = {"hello", "world", "start", "begin", "final"};
+        String[] example3 = {"germany", "ginger", "anyfin", "ishita", "fintsh", "finish", "begin"};
+
+        System.out.println("Example 1:");
+        System.out.println(findWordChain(example1)); // Expected: ["begin", "ginger", "germany", "anyfin", "finish", "ishita"]
+
+        System.out.println("Example 2:");
+        System.out.println(findWordChain(example2)); // Expected: []
+
+        System.out.println("Example 3:");
+        System.out.println(findWordChain(example3)); // Expected: []
+    }
+}
+
+// TC - O(N!), SC - O(N)
