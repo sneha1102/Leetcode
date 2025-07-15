@@ -1,0 +1,173 @@
+Given a binary tree with n nodes and two node values, a and b, your task is to find the minimum distance between them. The given two nodes are guaranteed to be in the binary tree and all node values are unique.
+
+Examples :
+
+Input: Tree = [1, 2, 3]
+        1
+      /  \
+     2    3
+a = 2, b = 3
+Output: 2
+Explanation: We need the distance between 2 and 3. Being at node 2, we need to take two steps ahead in order to reach node 3. The path followed will be: 2 -> 1 -> 3. Hence, the result is 2. 
+
+Input: Tree = [11, 22, 33, 44, 55, 66, 77]
+        11
+      /   \
+     22  33
+    /  \  /  \
+  44 55 66 77
+a = 77, b = 22
+Output: 3
+Explanation: We need the distance between 77 and 22. Being at node 77, we need to take three steps ahead in order to reach node 22. The path followed will be: 77 -> 33 -> 11 -> 22. Hence, the result is 3.
+
+Input: Tree = [1, 2, 3]
+        1
+      /  \
+     2    3
+a = 1, b = 3
+Output: 1
+
+Constraints:
+2 <= number of nodes <= 105
+Solution:-
+// FUNCTION CODE
+/* A Binary Tree node
+class Node
+{
+    int data;
+    Node left, right;
+   Node(int item)    {
+        data = item;
+        left = right = null;
+    }
+} */
+
+/* Should return minimum distance between a and b
+   in a tree with given root*/
+class GfG {
+    // approach - 1
+    // TC - O(3N), SC - O(N)
+    /**
+    int findDist(Node root, int a, int b) {
+        // Your code here
+        Node lca = findLca(root, a, b);
+        int distA = findDistanceFromRoot(root, a);
+        int distB = findDistanceFromRoot(root, b);
+        int distLca = findDistanceFromRoot(root, lca.data);
+        int dist = distA + distB - (2 * distLca);
+        return dist;
+        
+    }
+    
+    // TC - O(N), SC - O(W) W = width of binary tree
+    // findlca then dist of A from root + dist of B from root - (2 * dist of LCA from root)
+    private int findDistanceFromRoot(Node root, int d){
+        if(root == null){
+            return -1;
+        }
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+        int dist = 0;
+        
+        while(!q.isEmpty()){
+            int size = q.size();
+            for(int i = 0; i < size; i++){
+                Node curr = q.poll();
+                if(curr.data == d){
+                    return dist;
+                }
+                if(curr.left != null){
+                    q.add(curr.left);
+                }
+                if(curr.right != null){
+                    q.add(curr.right);
+                }
+            }
+            dist++;
+        }
+        return -1;
+    }
+    
+    private Node findLca(Node root, int a, int b){
+        if(root == null){
+            return null;
+        }
+        if(root.data == a || root.data == b){
+            return root;
+        }
+        Node left = findLca(root.left, a, b);
+        Node right = findLca(root.right, a, b);
+        if(left != null && right != null){
+            return root;
+        }
+        if(left == null){
+            return right;
+        }
+        if(right == null){
+            return left;
+        }
+        return null;
+    }
+    */
+    
+    // approach - 2
+    // find lca and then level of a and b from lca then add both
+    // TC - O(3N), SC - O(N)
+    int findDist(Node root, int a, int b) {
+        // Your code here
+        Node lca = findLca(root, a, b);
+        int levelA = findLevelFromGivenNode(lca, a);
+        int levelB = findLevelFromGivenNode(lca, b);
+        int dist = levelA + levelB;
+        return dist;
+        
+    }
+    
+    private Node findLca(Node root, int a, int b){
+        if(root == null){
+            return null;
+        }
+        if(root.data == a || root.data == b){
+            return root;
+        }
+        Node left = findLca(root.left, a, b);
+        Node right = findLca(root.right, a, b);
+        if(left != null && right != null){
+            return root;
+        }
+        if(left == null){
+            return right;
+        }
+        if(right == null){
+            return left;
+        }
+        return null;
+    }
+    
+    private int findLevelFromGivenNode(Node root, int d){
+        if(root == null){
+            return -1;
+        }
+        Queue<Node> q = new LinkedList<>();
+        q.add(root);
+        int level = 0;
+        
+        while(!q.isEmpty()){
+            int size = q.size();
+            for(int i = 0; i < size; i++){
+                Node curr = q.poll();
+                if(curr.data == d){
+                    return level;
+                }
+                if(curr.left != null){
+                    q.add(curr.left);
+                }
+                if(curr.right != null){
+                    q.add(curr.right);
+                }
+            }
+            level++;
+        }
+        return -1;
+    }    
+}
