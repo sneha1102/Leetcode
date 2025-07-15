@@ -1,0 +1,159 @@
+You are given k identical eggs and you have access to a building with n floors labeled from 1 to n.
+
+You know that there exists a floor f where 0 <= f <= n such that any egg dropped at a floor higher than f will break, and any egg dropped at or below floor f will not break.
+
+Each move, you may take an unbroken egg and drop it from any floor x (where 1 <= x <= n). If the egg breaks, you can no longer use it. However, if the egg does not break, you may reuse it in future moves.
+
+Return the minimum number of moves that you need to determine with certainty what the value of f is.
+
+ 
+
+Example 1:
+
+Input: k = 1, n = 2
+Output: 2
+Explanation: 
+Drop the egg from floor 1. If it breaks, we know that f = 0.
+Otherwise, drop the egg from floor 2. If it breaks, we know that f = 1.
+If it does not break, then we know f = 2.
+Hence, we need at minimum 2 moves to determine with certainty what the value of f is.
+
+Example 2:
+
+Input: k = 2, n = 6
+Output: 3
+
+Example 3:
+
+Input: k = 3, n = 14
+Output: 4
+
+ 
+
+Constraints:
+
+    1 <= k <= 100
+    1 <= n <= 104
+
+
+Solution:-
+
+class Solution {
+    // TC - ( O(f^k) ) (exponential growth) where f = n, no of floors and k = no of eggs
+    // SC - ( O(k) ) (recursion stack).
+    /**
+    public int superEggDrop(int k, int n) {
+        return solve(n, k);
+    }
+    private int solve(int n, int k) {
+        // Base cases
+        if (k == 1) {
+            return n; // If we have 1 egg, we need to test all floors
+        }
+        if (n == 0) {
+            return 0; // No floors, so no drops needed
+        }
+
+        int res = Integer.MAX_VALUE;
+
+        // Test dropping an egg on each floor from 1 to n
+        for (int i = 1; i <= n; i++) { 
+            int broken = solve(i - 1, k - 1); // Egg breaks, check floors below
+            // here n - i = no of floors left to test
+            int notBroken = solve(n - i, k); // Egg doesn't break, check floors above
+            int maxVal = Math.max(broken, notBroken); // Worst case scenario
+            res = Math.min(res, maxVal + 1); // Add 1 drop for current floor
+        }
+
+        return res;
+    }
+    */
+    // memoization
+    // TC - ( O(k * n ^ 2) ).
+    // SC - ( O(k * (n + k)) ).
+    /**
+    public int superEggDrop(int k, int n) {
+        int dp[][] = new int[k + 1][n + 1];
+        return solve(n, k, dp);
+    }
+    private int solve(int n, int k, int dp[][]) {
+        // Base cases
+        if (k == 1) {
+            return n; // If we have 1 egg, we need to test all floors
+        }
+        if (n == 0) {
+            return 0; // No floors, so no drops needed
+        }
+        if(dp[k][n] != 0){
+            return dp[k][n];
+        }
+
+        int res = Integer.MAX_VALUE;
+
+        // Test dropping an egg on each floor from 1 to n
+        for (int i = 1; i <= n; i++) { 
+            int broken = solve(i - 1, k - 1, dp); // Egg breaks, check floors below
+            // here n - i = no of floors left to test
+            int notBroken = solve(n - i, k, dp); // Egg doesn't break, check floors above
+            int maxVal = Math.max(broken, notBroken); // Worst case scenario
+            res = Math.min(res, maxVal + 1); // Add 1 drop for current floor
+        }
+
+        return dp[k][n] = res;
+    }
+    */
+
+    // binary search
+    // TC -  (O(k * n * log n))
+    // SC -  (O(k * n))
+    public int superEggDrop(int k, int n) {
+       // Dynamic programming table where dp[i][j] is the minimum number of moves
+        // needed with i eggs and j floors.
+        int[][] dp = new int[k + 1][n + 1];
+        
+        // Initialization: if we have 0 or 1 floors, it takes 0 or 1 drop
+        for (int i = 1; i <= k; i++) {
+            dp[i][0] = 0; // 0 floors
+            dp[i][1] = 1; // 1 floor
+        }
+
+        for (int j = 1; j <= n; j++) {
+            dp[1][j] = j; // With one egg, we have to drop from every floor
+        }
+
+        // Start filling the DP table
+        for (int i = 2; i <= k; i++) { // Eggs
+            for (int j = 2; j <= n; j++) { // Floors
+                int low = 1, high = j;
+                int result = Integer.MAX_VALUE;
+
+                // Binary search to find the minimum worst-case drops
+                while (low <= high) {
+                    int mid = (low + high) / 2;
+
+                    // Break case: move downward (mid-1 floors)
+                    int breakCase = dp[i - 1][mid - 1];
+                    // Not break case: move upward (rest floors)
+                    int notBreakCase = dp[i][j - mid];
+                    
+                    // Worst case scenario in the current drop
+                    int currentWorst = Math.max(breakCase, notBreakCase);
+
+                    // Update the result to the minimum moves possible in worst case
+                    result = Math.min(result, currentWorst + 1);
+
+                    // Narrow down the binary search range
+                    if (breakCase > notBreakCase) {
+                        high = mid - 1; // Go lower
+                    } else {
+                        low = mid + 1; // Go higher
+                    }
+                }
+
+                dp[i][j] = result; // Store the minimum moves in dp table
+            }
+        }
+
+        return dp[k][n];
+    }
+}
