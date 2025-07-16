@@ -24,76 +24,110 @@ Example 2:
 Input: nums = [9], target = 3
 Output: 0
 
- 
-
-Constraints:
-
-    1 <= nums.length <= 200
-    1 <= nums[i] <= 1000
-    All the elements of nums are unique.
-    1 <= target <= 1000
 
 Solution:-
 
 class Solution {
-    // public int combinationSum4(int[] nums, int target) {
-    //     return solve(nums, target);
-    // }
-
-    // public int solve(int[] nums, int target){
-    //     if(target < 0){
-    //         return 0;
-    //     }
-    //     if(target == 0){
-    //         return 1;
-    //     }
-    //     int ans = 0;
-    //     for(int i = 0; i < nums.length; i++){
-    //         ans += solve(nums, target - nums[i]);
-    //     }
-    //     return ans;
-    // }
-
-    // public int combinationSum4(int[] nums, int target) {
-    //     return solve(nums, target);
-    // }
-
     // recursion
-    // public int solve(int[] nums, int target){
-    //     if(target < 0){
+    // tc - exponential
+    // public int combinationSum4(int[] nums, int target) {
+    //     int n = nums.length;
+    //     return solve(0, target, nums);
+    // }
+
+    // public int solve(int idx, int target, int[] nums){
+    //     if(idx >= nums.length || target < 0){
     //         return 0;
     //     }
     //     if(target == 0){
     //         return 1;
     //     }
-    //     int ans = 0;
-    //     for(int i = 0; i < nums.length; i++){
-    //         ans += solve(nums, target - nums[i]);
-    //     }
-    //     return ans;
+    //     // in case of take always idx will start from 0
+    //     int take = solve(0, target - nums[idx], nums);
+    //     int nt = solve(idx + 1, target, nums);
+    //     return take + nt;
     // }
+
 
     // memoization
+    // TC - O(nums.length × target), SC - O(nums.length × target)
     public int combinationSum4(int[] nums, int target) {
-        int dp[] = new int[target + 1];
-        Arrays.fill(dp, -1);
-        return solve(nums, target, dp);
+        // since idx and target is changing so 2d array
+        int dp[][] = new int[nums.length + 1][target + 1];
+        for(int i = 0; i < nums.length; i++)
+            Arrays.fill(dp[i], -1);
+        return solve(0, target, nums, dp);
     }
 
-    public int solve(int[] nums, int target, int[] dp){
-        if(target < 0){
+    public int solve(int idx, int target, int nums[], int[][] dp){
+        if(idx >= nums.length || target < 0){
             return 0;
         }
         if(target == 0){
             return 1;
         }
-        if(dp[target] != -1){
-            return dp[target];
+        if(dp[idx][target] != -1){
+            return dp[idx][target];
         }
-        int ans = 0;
-        for(int i = 0; i < nums.length; i++){
-            ans += solve(nums, target - nums[i], dp);
-        }
-        return dp[target] = ans;
+        // in case of take always idx will start from 0
+        int take = solve(0, target - nums[idx], nums, dp);
+        int nt = solve(idx + 1, target, nums, dp);
+        return dp[idx][target] = take + nt;
     }
+
+
+
+
+    // USING FOR LOOP
+    // recursion
+    // TC - O(nums.length^target), SC - O(target) - auxiliary space for recusion
+    // tc - exponential
+    // public int combinationSum4(int[] nums, int target) {
+    //     return solve(nums, target);
+    // }
+
+    // public int solve(int[] nums, int target){
+    //     if(target < 0){
+    //         return 0;
+    //     }
+    //     if(target == 0){
+    //         return 1;
+    //     }
+    //     int ans = 0;
+    //     for(int i = 0; i < nums.length; i++){
+    //        // here nt is automatically handled by for loop as i++ means we are moving to next index i.e reject case
+    //        int take = solve(nums, target - nums[i]);
+    //        ans += take
+    //     }
+    //     return ans;
+    // }
+
+    // public int combinationSum4(int[] nums, int target) {
+    //     return solve(nums, target);
+    // }
+
+    // memoization
+    // TC - O(nums.length × target), SC - O(target)
+    // public int combinationSum4(int[] nums, int target) {
+    //     int dp[] = new int[target + 1];
+    //     Arrays.fill(dp, -1);
+    //     return solve(nums, target, dp);
+    // }
+
+    // public int solve(int[] nums, int target, int[] dp){
+    //     if(target < 0){
+    //         return 0;
+    //     }
+    //     if(target == 0){
+    //         return 1;
+    //     }
+    //     if(dp[target] != -1){
+    //         return dp[target];
+    //     }
+    //     int ans = 0;
+    //     for(int i = 0; i < nums.length; i++){
+    //         ans += solve(nums, target - nums[i], dp);
+    //     }
+    //     return dp[target] = ans;
+    // }
 }
