@@ -55,7 +55,7 @@ class Solution {
         return cnt;
     }
     // TC - O(N Log N), SC - O(N)
-    public static int numberOfInversions(int[] a, int n) {
+    public int numberOfInversions(int[] a, int n) {
         // Count the number of pairs:
         return mergeSort(a, 0, n - 1);
     }
