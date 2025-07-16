@@ -31,6 +31,29 @@ Constraints:
 Solution:-
 
 class Solution {
+    // approach - 1, TC - O(N * K)
+    /**
+    public void rotate(int[] nums, int k){
+        int n = nums.length;
+    
+        // even if the given k is greater than n, logically
+        // we've to perform only k % n shifting
+        int l = k;
+        k = n - l;
+        k = k % n;
+
+        // performing K interations.
+        while(k-- > 0){
+            int pick = nums[0];
+            for(int i = 1; i < n; i++){
+                nums[i - 1] = nums[i];
+            }
+            nums[n - 1] = pick;
+        }
+    }
+    */
+
+    // TC - O(N)
     public void rotate(int[] nums, int k) {
         if(nums == null || nums.length == 1){
             return;
