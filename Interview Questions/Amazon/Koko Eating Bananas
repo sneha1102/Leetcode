@@ -1,0 +1,73 @@
+Koko loves to eat bananas. There are n piles of bananas, the ith pile has piles[i] bananas. The guards have gone and will come back in h hours.
+
+Koko can decide her bananas-per-hour eating speed of k. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them instead and will not eat any more bananas during this hour.
+
+Koko likes to eat slowly but still wants to finish eating all the bananas before the guards return.
+
+Return the minimum integer k such that she can eat all the bananas within h hours.
+
+ 
+
+Example 1:
+
+Input: piles = [3,6,7,11], h = 8
+Output: 4
+
+Example 2:
+
+Input: piles = [30,11,23,4,20], h = 5
+Output: 30
+
+Example 3:
+
+Input: piles = [30,11,23,4,20], h = 6
+Output: 23
+
+ 
+
+Constraints:
+
+    1 <= piles.length <= 104
+    piles.length <= h <= 109
+    1 <= piles[i] <= 109
+
+
+Solution:-
+
+class Solution {
+    // TC -  O(max(a[]) * N), where max(a[]) is the maximum element in the array and N = size of the array.
+    // SC - O(1)
+    public int minEatingSpeed(int[] piles, int h) {
+        int high = findMaxElement(piles);
+        int low = 0;
+
+        while(low <= high){
+            int mid = (low + high) / 2;
+            // find how much time it will take t eat all bananas with daily capacity of eating mid no of bananas
+            int totalHr = calculateTime(piles, mid);
+            if(totalHr <= h){
+                // since w enee dto minimise so try to see if we can find something smaller
+                high = mid - 1;
+            }else{
+                low = mid + 1;
+            }
+        }
+        return low;
+
+    }
+    private int calculateTime(int[] piles, int h){
+        int totalHr = 0;
+        for(int i = 0; i < piles.length; i++){
+            totalHr += Math.ceil((double)(piles[i]) / (double)(h));;
+        }
+        return totalHr;
+    }
+
+    private int findMaxElement(int[] piles){
+        int max = Integer.MIN_VALUE;
+        for(int i = 0; i < piles.length; i++){
+            max = Math.max(max, piles[i]);
+        }
+        return max;
+    }
+}
