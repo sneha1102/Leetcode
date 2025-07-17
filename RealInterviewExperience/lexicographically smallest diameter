@@ -1,0 +1,97 @@
+// Given a binary tree where node values are lowercase alphabets, the task is to find the lexicographically smallest diameter. Diameter is the longest path between any two leaf nodes, hence, there can be multiple diameters in a Binary Tree. The task is to print the lexicographically smallest diameter among all possible diameters.
+
+// Input:          
+//         a
+//       /   \
+//     b       c
+//   /  \     /  \
+//  d   e    f    g
+ 
+// Output: Diameter: 5
+// Lexicographically smallest diameter: d b a c f
+
+
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+    static class TreeNode{
+        char val;
+        TreeNode left, right;
+        TreeNode(char v){
+            this.val = v;
+            this.left = null;
+            this.right = null;
+        }
+    }
+    private static List<Character> res = new ArrayList<>();
+    private static int maxDiameter = 0;
+    // TC - O(N ^ 2), SC - O(N)
+    public static List<Character> getLexSmallestDiameter(TreeNode root){
+        dfs(root);
+        return res;
+    }
+    
+    private static List<Character> dfs(TreeNode node){
+        if(node == null){
+            return new ArrayList<>();
+        }
+        List<Character> leftPath = dfs(node.left);
+        List<Character> rightPath = dfs(node.right);
+                
+        int currDiameter = leftPath.size() + rightPath.size();
+        
+        List<Character> fullPath = new ArrayList<>(leftPath);
+        fullPath.add(node.val);
+        
+        List<Character> rightReversed = new ArrayList<>(rightPath);
+        Collections.reverse(rightReversed);
+        fullPath.addAll(rightReversed);
+        
+        if(currDiameter >  maxDiameter){
+            maxDiameter = currDiameter;
+            res = new ArrayList<>(fullPath);
+        }else if(currDiameter == maxDiameter){
+            if(comparePaths(fullPath, res) < 0){
+                res = new ArrayList<>(fullPath);
+            }
+        }
+        
+        List<Character> longestPath = leftPath.size() >= rightPath.size() ? leftPath: rightPath;
+        longestPath.add(node.val);
+        
+        return longestPath;
+        
+        
+    }
+    
+    private static int comparePaths(List<Character> list1, List<Character> list2){
+        for(int i = 0; i < Math.min(list1.size(), list2.size()); i++){
+            int cmp = Character.compare(list1.get(i), list2.get(i));
+            if(cmp != 0){
+                return cmp;
+            }
+        }
+        return Integer.compare(list1.size(), list2.size());
+    }
+
+    public static void main(String[] args) {
+        TreeNode root = new TreeNode('a');
+        root.left = new TreeNode('b');
+        root.right = new TreeNode('c');
+        root.left.left = new TreeNode('d');
+        root.left.right = new TreeNode('e');
+        root.right.left = new TreeNode('f');
+        root.right.right = new TreeNode('g');
+        
+        List<Character> res = Solution.getLexSmallestDiameter(root);
+        System.out.println(res);
+    }
+}
+
+
+
+
