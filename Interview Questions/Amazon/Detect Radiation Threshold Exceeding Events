@@ -1,0 +1,133 @@
+
+
+You are tasked with writing a program to identify time intervals during which cumulative radiation levels exceed a given threshold. Radiation levels are provided as a list of events, where each event specifies:
+
+start: The start time of the event.
+end: The end time of the event.
+radiantVal: The radiation value contributed by this event during its active period.
+Your goal is to output all intervals during which the cumulative radiation (sum of all active events at that time) exceeds the threshold.
+
+Inputs:
+
+A list of radiation events. Each event is defined by start, end, and radiantVal.
+A threshold value, which signals the limit above which radiation levels are unsafe.
+Output:
+
+A list of time intervals [start, end] during which the cumulative radiation exceeds the threshold.
+Example:
+Input:
+Suppose we have the following radiation events:
+
+Event 1: start = 1, end = 5, radiantVal = 10
+Event 2: start = 3, end = 7, radiantVal = 8
+Event 3: start = 6, end = 9, radiantVal = 12
+Event 4: start = 10, end = 12, radiantVal = 5
+The threshold value is 15.
+outpit:-
+3 5
+6 7
+
+Solution:-
+
+// TC - O(N Log N)
+// SC - O(N)
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class radiationEvents {
+
+    static class RadiationEvent {
+        int start;
+        int end;
+        int radiantVal;
+
+        public RadiationEvent(int start, int end, int radiantVal) {
+            this.start = start;
+            this.end = end;
+            this.radiantVal = radiantVal;
+        }
+    }
+
+    static class TimePoint {
+        int time;
+        int type; // 1 for start, -1 for end
+        int radiantValue;
+
+        public TimePoint(int time, int type, int radiantValue) {
+            this.time = time;
+            this.type = type;
+            this.radiantValue = radiantValue;
+        }
+    }
+
+    /**
+     * Method to find intervals where the cumulative radiation exceeds the threshold.
+     *
+     * @param events List of RadiationEvent objects.
+     * @param threshold The radiation threshold to exceed.
+     * @return List of intervals, where each interval is represented as an array [start, end].
+     */
+    private static List<int[]> getExceedingRadiantEvents(List<RadiationEvent> events, int threshold) {
+        List<TimePoint> timePoints = new ArrayList<>();
+        List<int[]> res = new ArrayList<>();
+
+        // Convert each radiation event into start and end TimePoint objects
+        for (RadiationEvent radiationEvent : events) {
+            timePoints.add(new TimePoint(radiationEvent.start, 1, radiationEvent.radiantVal)); // 1 for start
+            timePoints.add(new TimePoint(radiationEvent.end, -1, -radiationEvent.radiantVal)); // -1 for end
+        }
+
+        // Sort 'timePoints' by time, and prioritize 'end' over 'start' for tie cases
+        Collections.sort(timePoints, (a, b) -> {
+            if (a.time == b.time) {
+                return Integer.compare(a.type, b.type);
+            } else {
+                return Integer.compare(a.time, b.time);
+            }
+        });
+
+        // Process sorted time points to find exceeding intervals
+        int currRadiant = 0, prevRadiant = 0, intervalStart = -1;
+        for (TimePoint timePoint : timePoints) {
+            prevRadiant = currRadiant;
+            currRadiant += timePoint.radiantValue;
+
+            // Detect when cumulative radiation exceeds the threshold
+            if (prevRadiant <= threshold && currRadiant > threshold) {
+                intervalStart = timePoint.time; // Start of exceeding interval
+            }
+            // Detect when cumulative radiation falls below the threshold
+            else if (prevRadiant > threshold && currRadiant <= threshold) {
+                if (timePoint.type != 1) { // End of exceeding interval
+                    res.add(new int[]{intervalStart, timePoint.time});
+                    intervalStart = -1; // Reset interval start
+                }
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * Main method to test the functionality.
+     */
+    public static void main(String[] args) {
+        List<RadiationEvent> arr = new ArrayList<>();
+        arr.add(new RadiationEvent(1, 5, 10));
+        arr.add(new RadiationEvent(3, 7, 8));
+        arr.add(new RadiationEvent(6, 9, 12));
+        arr.add(new RadiationEvent(10, 12, 5));
+
+        int threshold = 15;
+
+        List<int[]> res = new ArrayList<>();
+        res = getExceedingRadiantEvents(arr, threshold);
+
+        // Output the intervals where radiation exceeds the threshold
+        for (int[] interval : res) {
+            System.out.println(interval[0] + " " + interval[1]);
+        }
+    }
+}
