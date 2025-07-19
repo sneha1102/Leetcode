@@ -1,0 +1,93 @@
+Given a string s, rearrange the characters of s so that any two adjacent characters are not the same.
+
+Return any possible rearrangement of s or return "" if not possible.
+
+ 
+
+Example 1:
+
+Input: s = "aab"
+Output: "aba"
+
+Example 2:
+
+Input: s = "aaab"
+Output: ""
+
+ 
+
+Constraints:
+
+    1 <= s.length <= 500
+    s consists of lowercase English letters.
+
+
+Solution:-
+
+class Solution {
+    // TC - O(N + N Log N), SC - O(k + n), where k is the number of unique characters and n is the input string length.
+    public String reorganizeString(String s) {
+        // Step 1: Count the frequency of each character in the string
+        Map<Character, Integer> frequencyMap = new HashMap<>();
+        int maxFreqChar = 0;  // To store the maximum frequency of any character
+        for (char c : s.toCharArray()) {
+            frequencyMap.put(c, frequencyMap.getOrDefault(c, 0) + 1);
+            maxFreqChar = Math.max(maxFreqChar, frequencyMap.get(c)); // Update max frequency
+        }
+        
+        int n = s.length();
+
+        // Step 2: If the frequency of the most common character is greater than (n + 1) / 2,
+        // it is impossible to reorganize the string to prevent adjacent duplicates.
+        if (maxFreqChar > (n + 1) / 2) {
+            return ""; // Return an empty string since it's not possible to reorganize
+        }
+
+        // Step 3: Use a max-heap (priority queue) to organize characters by their frequencies.
+        PriorityQueue<Character> maxHeap = new PriorityQueue<>(
+            (a, b) -> frequencyMap.get(b) - frequencyMap.get(a)
+        );
+
+        // Add all characters to the max-heap
+        for (char ch : frequencyMap.keySet()) {
+            maxHeap.add(ch);
+        }
+
+        // Step 4: Build the resulting string
+        StringBuilder sb = new StringBuilder();
+
+        // Continuously poll characters from the heap and append them to the result string
+        while (!maxHeap.isEmpty()) {
+            // Poll the most frequent character
+            char ch1 = maxHeap.poll();
+            sb.append(ch1);
+
+            // Poll the second most frequent character (if possible)
+            char ch2 = '$'; // Placeholder for the second character
+            if (!maxHeap.isEmpty()) {
+                ch2 = maxHeap.poll();
+                sb.append(ch2);
+            }
+
+            // Update the frequency of the first character in the map
+            if (frequencyMap.get(ch1) == 1) {
+                frequencyMap.remove(ch1); // Remove if frequency becomes 0
+            } else {
+                frequencyMap.put(ch1, frequencyMap.get(ch1) - 1);
+                maxHeap.add(ch1); // Push back to the heap if still available
+            }
+
+            // Update the frequency of the second character in the map
+            if (ch2 != '$') { // Ensure `ch2` is valid
+                if (frequencyMap.get(ch2) == 1) {
+                    frequencyMap.remove(ch2); // Remove if frequency becomes 0
+                } else {
+                    frequencyMap.put(ch2, frequencyMap.get(ch2) - 1);
+                    maxHeap.add(ch2); // Push back to the heap if still available
+                }
+            }
+        }
+
+        return sb.toString(); // Return the reorganized string
+    }
+}
