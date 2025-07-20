@@ -1,0 +1,145 @@
+Design Data structure like Queue in which you have to get the middle element in O(1), then update that value and do some modification and add back to the Queue in O(1) and the rearrangement happens.
+
+
+Solution:-
+
+We will use double linked list (head, tail, middle and size).
+
+// TC - O(1) for all operations
+class MiddleQueue {
+    private class Node {
+        int value;
+        Node prev, next;
+
+        Node(int value) {
+            this.value = value;
+            this.prev = null;
+            this.next = null;
+        }
+    }
+
+    private Node head, tail, middle;
+    private int size;
+
+    // Constructor initializes an empty queue
+    public MiddleQueue() {
+        this.head = null;
+        this.tail = null;
+        this.middle = null;
+        this.size = 0;
+    }
+
+    // Add an element to the end of the queue
+    public void enqueue(int value) {
+        Node newNode = new Node(value);
+
+        if (size == 0) {
+            head = tail = middle = newNode; // First node is also the middle node
+        } else {
+            // Add to the end (tail)
+            tail.next = newNode;
+            newNode.prev = tail;
+            tail = newNode;
+
+            // Update the middle pointer if size becomes even
+            if (size % 2 == 0) {
+                middle = middle.next;
+            }
+        }
+        
+        size++; // Increment size
+    }
+
+    // Remove an element from the front of the queue
+    public int dequeue() {
+        if (size == 0) {
+            throw new IllegalStateException("Queue is empty");
+        }
+
+        int value = head.value; // Get the value of the front element
+        head = head.next; // Move head to the next element
+        
+        if (head != null) {
+            head.prev = null;
+        } else {
+            tail = null; // Queue is now empty
+        }
+
+        // Update the middle pointer if size becomes odd
+        if (size % 2 == 1) {
+            middle = middle.prev; // Move middle one step backward
+        }
+
+        size--; // Decrement size
+        return value;
+    }
+
+    // Get the middle element of the queue in O(1)
+    public int getMiddle() {
+        if (size == 0) {
+            throw new IllegalStateException("Queue is empty");
+        }
+        return middle.value; // Return the value the middle pointer points to
+    }
+
+    // Update the middle element of the queue in O(1)
+    public void updateMiddle(int newValue) {
+        if (size == 0) {
+            throw new IllegalStateException("Queue is empty");
+        }
+        middle.value = newValue; // Update the value at the middle node
+    }
+
+    // Print all elements of the queue (for debugging)
+    public void printQueue() {
+        Node current = head;
+        while (current != null) {
+            System.out.print(current.value + " ");
+            current = current.next;
+        }
+        System.out.println(); // End of queue display
+    }
+
+    // Get the current size of the queue
+    public int size() {
+        return size;
+    }
+}
+public class Main {
+    public static void main(String[] args) {
+        // Create a MiddleQueue for integers
+        MiddleQueue queue = new MiddleQueue();
+
+        // Add elements to the queue
+        queue.enqueue(1);
+        queue.enqueue(2);
+        queue.enqueue(3);
+        queue.enqueue(4);
+
+        // Print the queue
+        System.out.print("Queue: ");
+        queue.printQueue(); // Output: Queue: 1 2 3 4
+
+        // Get the middle element
+        System.out.println("Middle Element: " + queue.getMiddle()); // Output: 2
+
+        // Update the middle element
+        queue.updateMiddle(99);
+        System.out.println("Updated Middle Element: " + queue.getMiddle()); // Output: 99
+
+        // Print the queue again
+        System.out.print("Queue after updating middle: ");
+        queue.printQueue(); // Output: Queue: 1 99 3 4
+
+        // Remove an element from the front
+        int removed = queue.dequeue();
+        System.out.println("Removed Element: " + removed); // Output: 1
+
+        // Print the queue after removing an element
+        System.out.print("Queue after dequeue: ");
+        queue.printQueue(); // Output: Queue: 99 3 4
+
+        // Get the new middle element
+        System.out.println("New Middle Element: " + queue.getMiddle()); // Output: 3
+    }
+}
