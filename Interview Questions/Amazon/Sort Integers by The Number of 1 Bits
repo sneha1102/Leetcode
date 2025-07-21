@@ -1,0 +1,120 @@
+ou are given an integer array arr. Sort the integers in the array in ascending order by the number of 1's in their binary representation and in case of two or more integers have the same number of 1's you have to sort them in ascending order.
+
+Return the array after sorting it.
+
+ 
+
+Example 1:
+
+Input: arr = [0,1,2,3,4,5,6,7,8]
+Output: [0,1,2,4,8,3,5,6,7]
+Explantion: [0] is the only integer with 0 bits.
+[1,2,4,8] all have 1 bit.
+[3,5,6] have 2 bits.
+[7] has 3 bits.
+The sorted array by bits is [0,1,2,4,8,3,5,6,7]
+
+Example 2:
+
+Input: arr = [1024,512,256,128,64,32,16,8,4,2,1]
+Output: [1,2,4,8,16,32,64,128,256,512,1024]
+Explantion: All integers have 1 bit in the binary representation, you should just sort them in ascending order.
+
+ 
+
+Constraints:
+
+    1 <= arr.length <= 500
+    0 <= arr[i] <= 104
+
+
+Solution:-
+
+class Solution {
+    /**
+    // TC - O(N Log N + N), SC - O(N) 
+    public int[] sortByBits(int[] arr) {
+       int[] ans = new int[arr.length];
+       // store bit and correspnding list of no having same bits
+       Map<Integer, List<Integer>> m = new HashMap<>();
+       for(int i = 0; i < arr.length; i++){
+        int bitCount = countBits(arr[i]);
+        if(m.containsKey(bitCount)){
+            m.get(bitCount).add(arr[i]);
+        }else{
+            m.put(bitCount, new ArrayList<>());
+             m.get(bitCount).add(arr[i]);
+        }
+       }
+        // check for each no of bits in map
+        int j = 0;
+       for(int i = 0; i < 32; i++){
+        if(m.containsKey(i)){
+            List<Integer> ls = m.get(i);
+            Collections.sort(ls);
+            for(int k = 0; k < ls.size(); k++){
+                ans[j] = ls.get(k);
+                j++;
+            }
+        }
+       }
+       return ans;
+    }
+    int countBits(int n)
+    {
+        int bitcount = 0 ;
+        while(n != 0){
+            bitcount = bitcount + (n & 1);
+            // right shift
+            n = n >> 1;
+        }
+        return bitcount;
+    }
+    */
+
+/**
+    // TC - O(N Log N + N), SC - O(N) 
+    public int[] sortByBits(int[] arr) {
+       int[] ans = new int[arr.length];
+       Integer wrapper[] = new Integer[arr.length];
+       int j = 0;
+       for(int i: arr){
+        wrapper[j++] = i;
+       }
+       Arrays.sort(wrapper, (a, b) -> {
+        int val1 = countBits(a);
+        int val2 = countBits(b);
+        // if bits are same then sort on basis of natural ordering
+        return (val1 == val2) ? a - b : val1 - val2;
+       });
+       j = 0;
+       for(int i: wrapper){
+        ans[j++] = i;
+       }
+       return ans;
+    }
+    int countBits(int n)
+    {
+        int bitcount = 0 ;
+        while(n != 0){
+            bitcount = bitcount + (n & 1);
+            // right shift
+            n = n >> 1;
+        }
+        return bitcount;
+    }
+    */
+
+    // TC - O(N Log N + N), SC - O(N) 
+    public int[] sortByBits(int[] arr) {
+        return Arrays.stream(arr)                // Convert int[] to IntStream
+            .boxed()                             // Convert IntStream to Stream<Integer>
+            .sorted((a, b) -> {                  // Use a custom comparator
+                int val1 = Integer.bitCount(a);  // Count bits for 'a'
+                int val2 = Integer.bitCount(b);  // Count bits for 'b'
+                return (val1 == val2) ? a - b : val1 - val2; // Sort by bit count, then natural order
+            })
+            .mapToInt(Integer::intValue)         // Convert Stream<Integer> back to IntStream, then to int[]
+            .toArray(); 
+    }
+}
