@@ -1,0 +1,100 @@
+Question: Analyze User Website Visit Pattern
+You are given three arrays:
+
+username: A string array where each element represents the name of a user who visited a website.
+timestamp: An integer array where each element represents the time at which the corresponding website was visited.
+website: A string array where each element represents the name of a website that was visited.
+Each index in the arrays username, timestamp, and website corresponds to a single user visiting a website at a specific time.
+
+Your task is to find the most visited three-sequence of websites (a sequence of three consecutive websites visited by the same user). If there is a tie (multiple sequences appear the same number of times), return the lexicographically smallest sequence.
+
+Input Format:
+username: A string array of size n.
+timestamp: An integer array of size n.
+website: A string array of size n.
+Output Format:
+A list of strings representing the most visited three-sequence.
+
+Example Input:
+String[] username = {"u1", "u1", "u1", "u2", "u2", "u2", "u3", "u3"};
+int[] timestamp = {1, 2, 3, 4, 5, 6, 7, 8};
+String[] website = {"a", "b", "c", "a", "b", "a", "b", "c"};
+Example Output:
+List<String> result = Arrays.asList("a", "b", "c");
+System.out.println(result); // Output: [a, b, c]
+
+Solution:-
+
+import java.util.*;
+
+// TC -  O(n log n + m * k + p) where n = total number of visits across all users, m = number of unique users,
+// k = average number of websites visited, p =  number of unique 3-sequences
+// SC - O(n + m * k + p)
+public class AnalyzeUserWebsiteVisitPattern {
+    static class Visit{
+        String username;
+        int timestamp;
+        String website;
+
+        public Visit(String username, int timestamp, String website) {
+            this.username = username;
+            this.timestamp = timestamp;
+            this.website = website;
+        }
+    }
+    private static List<String> mostVisitedPattern(String[] username, int[] timestamp, String[] website){
+        // Step 1: Combine username, timestamp, and website into a list of tuples and sort by timestamp
+        int n = username.length;
+        List<Visit> visits = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            visits.add(new Visit(username[i], timestamp[i], website[i]));
+        }
+        visits.sort(Comparator.comparingInt(v -> v.timestamp));
+
+        // Step 2: Group websites by user
+        Map<String, List<String>> userWebsites = new HashMap<>();
+        for (Visit visit : visits) {
+            userWebsites.putIfAbsent(visit.username, new ArrayList<>());
+            userWebsites.get(visit.username).add(visit.website);
+        }
+
+        // Step 3: Count the frequencies of all 3-sequences
+        Map<List<String>, Integer> sequenceCount = new HashMap<>();
+        for (String user : userWebsites.keySet()) {
+            List<String> websites = userWebsites.get(user);
+            if (websites.size() < 3) continue;
+
+            // sliding window for generating all possible combinations
+            for (int i = 0; i < websites.size() - 2; i++) {
+                List<String> seq = Arrays.asList(websites.get(i), websites.get(i + 1), websites.get(i + 2));
+                sequenceCount.put(seq, sequenceCount.getOrDefault(seq, 0) + 1);
+            }
+        }
+
+        // Step 4: Find the most frequent sequence
+        List<String> result = null;
+        int maxCount = 0;
+        for (Map.Entry<List<String>, Integer> entry : sequenceCount.entrySet()) {
+            List<String> seq = entry.getKey();
+            int count = entry.getValue();
+
+            // Compare frequencies and lexicographical order
+            if (count > maxCount || (count == maxCount && (result == null || seq.toString().compareTo(result.toString()) < 0))) {
+                result = seq;
+                maxCount = count;
+            }
+        }
+        return result;
+    }
+
+    public static void main(String[] args) {
+        AnalyzeUserWebsiteVisitPattern solution = new AnalyzeUserWebsiteVisitPattern();
+
+        String[] username = {"u1", "u1", "u1", "u2", "u2", "u2", "u3", "u3"};
+        int[] timestamp = {1, 2, 3, 4, 5, 6, 7, 8};
+        String[] website = {"a", "b", "c", "a", "b", "a", "b", "c"};
+
+        List<String> result = solution.mostVisitedPattern(username, timestamp, website);
+        System.out.println(result); // Output: [a, b, c]
+    }
+}
