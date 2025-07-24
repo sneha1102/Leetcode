@@ -1,0 +1,74 @@
+/***
+Given a log of product pages visited on Amazon.com by customers, 
+write a function to return the most common 3-page sequence visited.
+
+For example, given a log with the following entries:
+
+
+[  (1, A, tent),  
+(2, A, shoe), 
+(3, B, shoe),  
+(4, A, coffee),  
+(5, B, coffee),  
+(6, B, blanket),  
+(7, B, file),  
+(8, A, blanket),  
+(9, A, book),  
+(10, B, tent) ]
+timestamp, customer id, pageid
+a -> tent shoe coffee blanket book
+b -> shoe coffee blanket file tent
+***/
+
+Solution:-
+
+class Solution{
+    class PageVisit{
+        int timeStamp;
+        String userId;
+        String pageId;
+    }
+    
+    List<String> mostCommon3PagesVisited(List<PageVisit> visits){
+        Map<String, List<String>> userPages = new HashMap<>();
+        for(PageVisit visit: visits){
+            userPages.computeIfAbsent(visit.userId, k -> new ArrayList<>()).add(visit.pageId);
+        }
+        
+        Map<String, Set<String>> sequenceUser = new HashMap<>();
+        
+        for(Map.Entry<String, List<String>> entry: userPages.entrySet()){
+            String user = entry.getKey();
+            List<String> pages = entry.getValue();
+            Set<String> seenSequences = new HashSet<>();
+            
+            int n = pages.size();
+            
+            for(int i = 0; i < n - 2; i++){
+                for(int j = i + 1; j < n - 1; j++){
+                    for(int k = j + 1; k < n; k++){
+                        String sequence = pages.get(i) + "," + pages.get(j) + "," + pages.get(k);
+                        if(seenSequences.add(sequence)){
+                            sequenceUser.computeIfAbsent(sequence, s -> new HashSet<>()).add(user);
+                    }
+                }
+            }
+        }
+    }
+    
+    String result = "";
+    int maxCountUser = 0;
+    for(Map.Entry<String, Set<String>> entry: sequenceUser.entrySet()){
+        String seq = entry.getKey();
+        int userCount = entry.getValue().size();
+        
+        if(userCount >= 2){
+            if(userCount > maxCountUser){
+                result = seq;
+                maxCountUser = userCount;
+            }
+        }
+    }
+    return result.isEmpty() ? new ArrayList<>() : Arrays.asList(result.split(","));
+    
+}
