@@ -1,0 +1,114 @@
+Given a string s which represents an expression, evaluate this expression and return its value. 
+
+The integer division should truncate toward zero.
+
+You may assume that the given expression is always valid. All intermediate results will be in the range of [-231, 231 - 1].
+
+Note: You are not allowed to use any built-in function which evaluates strings as mathematical expressions, such as eval().
+
+ 
+
+Example 1:
+
+Input: s = "3+2*2"
+Output: 7
+
+Example 2:
+
+Input: s = " 3/2 "
+Output: 1
+
+Example 3:
+
+Input: s = " 3+5 / 2 "
+Output: 5
+
+ 
+
+Constraints:
+
+    1 <= s.length <= 3 * 105
+    s consists of integers and operators ('+', '-', '*', '/') separated by some number of spaces.
+    s represents a valid expression.
+    All the integers in the expression are non-negative integers in the range [0, 231 - 1].
+    The answer is guaranteed to fit in a 32-bit integer.
+
+
+Solution:-
+
+class Solution {
+    // approach - 1
+    // convert each operation in form of +
+    // ex- 1 + 2 * 3 + 6 / 5 = 1 + (2 * 3) + (6 / 5)
+    // TC - O(N), SC - O(N)
+    /** 
+    public int calculate(String s) {
+        Stack<Integer> st = new Stack<>();
+        char ch[] = s.toCharArray();
+        char lastOperation = '+';
+        int currentNo = 0;
+        for(int i = 0; i < s.length() ; i++){
+            char currChar = ch[i];
+            if(Character.isDigit(currChar)){
+                currentNo = (currentNo * 10) + (currChar - '0');
+                //System.out.println(currentNo);
+            }
+            if(!Character.isDigit(currChar) && !(ch[i] == ' ') || i == s.length() - 1){
+                if(lastOperation == '+'){
+                    st.push(currentNo);
+                }else if(lastOperation == '-'){
+                    st.push(-currentNo);
+                }else if(lastOperation == '*'){
+                    int top = st.pop();
+                    st.push(top * currentNo);
+                }else if(lastOperation == '/'){
+                    int top = st.pop();
+                    int no = currentNo != 0 ? top /= currentNo : currentNo;
+                    st.push(no);
+                }
+                lastOperation = currChar;
+                currentNo = 0;
+            }
+
+        }
+
+        int res = 0;
+        while(!st.isEmpty()){
+            res += st.pop();
+        }
+    return res;
+}
+*/
+
+//approach 2 - instead of stack use res variable to store the data
+// TC - O(N), SC - O(1)
+ public int calculate(String s) {
+        int res = 0;
+        char ch[] = s.toCharArray();
+        char lastOperation = '+';
+        int currentNo = 0, lastNo = 0;
+        for(int i = 0; i < s.length() ; i++){
+            char currChar = ch[i];
+            if(Character.isDigit(currChar)){
+                currentNo = (currentNo * 10) + (currChar - '0');
+            }
+            
+            if((!Character.isDigit(currChar) && currChar != ' ') || i == s.length() - 1){
+                if(lastOperation == '+' || lastOperation == '-'){
+                    res += lastNo;
+                    lastNo = lastOperation == '+' ? currentNo : -currentNo;
+                }else if(lastOperation == '*'){
+                    lastNo = lastNo * currentNo;
+                }else if(lastOperation == '/'){
+                    lastNo = lastNo / currentNo;
+                }
+                lastOperation = currChar;
+                currentNo = 0;
+            }
+
+        }
+
+        res += lastNo;
+        return res;
+}
+}
