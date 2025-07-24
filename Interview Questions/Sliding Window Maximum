@@ -35,6 +35,39 @@ Constraints:
 Solution:-
 
 class Solution {
+    // approach - 1
+    // brute force
+    // TC - O(N * K), SC - O(1)
+    /** 
+    public int[] maxSlidingWindow(int[] nums, int k) {
+    // To store the result
+       int[] result = new int[nums.length - k + 1];
+
+        // Check edge cases
+        if (nums == null || nums.length == 0 || k <= 0 || k > nums.length) {
+            return new int[0];
+        }
+        int p = 0; 
+        // Iterate over each possible starting point of the window
+        for (int i = 0; i <= nums.length - k; i++) {
+            int max = Integer.MIN_VALUE;
+
+            // Iterate over each element in the current window
+            for (int j = i; j < i + k; j++) {
+                max = Math.max(max, nums[j]);
+            }
+
+            // Add the maximum value of the current window to the result list
+            result[p++] = max;
+        }
+
+        return result;
+}
+*/
+    // approach - 2 using slidimg window
+    // TC - O(n) (where n is the length of the input array nums).
+    // SC -  O(k) (where k is the size of the sliding window).
+
     public int[] maxSlidingWindow(int[] nums, int k) {
         if (nums.length == 0 || k == 0) {
             return new int[0];
@@ -64,4 +97,5 @@ class Solution {
         return res;
 
     }
+    
 }
