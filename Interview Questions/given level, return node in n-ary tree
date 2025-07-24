@@ -1,0 +1,179 @@
+The question boils down to given a list of Nodes in a N-ary tree, and given a level you have to return the nodes at the level.
+java code
+
+Solution:-
+
+// TC - O(N), SC - O(W)
+import java.util.*;
+
+class Node {
+    public int val;
+    public List<Node> children;
+
+    public Node() {}
+
+    public Node(int val) {
+        this.val = val;
+        this.children = new ArrayList<>();
+    }
+
+    public Node(int val, List<Node> children) {
+        this.val = val;
+        this.children = children;
+    }
+}
+
+public class Solution {
+    public List<Node> nodesAtLevel(Node root, int level) {
+        List<Node> result = new ArrayList<>();
+        if (root == null) return result; // Return empty list if the tree is empty
+
+        // Initialize the queue for BFS traversal
+        Queue<Node> queue = new LinkedList<>();
+        queue.offer(root);
+        int currentLevel = 0;
+
+        // Perform BFS
+        while (!queue.isEmpty()) {
+            int size = queue.size(); // Number of nodes at the current level
+
+            // Check if we've reached the desired level
+            if (currentLevel == level) {
+                for (Node node : queue) {
+                    result.add(node);
+                }
+                return result;
+            }
+
+            // Process nodes at the current level and add their children to the queue
+            for (int i = 0; i < size; i++) {
+                Node current = queue.poll();
+                if (current.children != null) {
+                    for (Node child : current.children) {
+                        queue.offer(child);
+                    }
+                }
+            }
+
+            currentLevel++; // Increment the level
+        }
+
+        return result; // Return empty list if the desired level doesn't exist
+    }
+
+    // Test the function
+    public static void main(String[] args) {
+        // Example tree
+        Node root = new Node(1);
+        Node child2 = new Node(2);
+        Node child3 = new Node(3);
+        Node child4 = new Node(4);
+        Node child5 = new Node(5);
+
+        root.children.add(child2);
+        root.children.add(child3);
+        root.children.add(child4);
+        child3.children.add(child5);
+
+        Solution solution = new Solution();
+        List<Node> result = solution.nodesAtLevel(root, 2);
+
+        // Print values of nodes at level 2
+        for (Node node : result) {
+            System.out.print(node.val + " ");
+        }
+        // Output: 5
+    }
+}
+
+FOLLOW -UP
+Asked a follow-up that now the nodes can be added and removed dynamically. We have to get the number of nodes at a given level in o(1) time.
+
+Solution:-
+
+Instead of relying on BFS to traverse the entire tree each time we need to compute the number of nodes at a level, we can maintain a level-to-node mapping (e.g., a hash table or array), and dynamically adjust this mapping when nodes are added or removed from the tree.
+
+public class DynamicTree {
+    private Map<Integer, Integer> levelMap; // Maps level -> count of nodes at that level
+    private Node root;                     // Root of the N-ary tree
+
+    public DynamicTree(Node root) {
+        this.root = root;
+        levelMap = new HashMap<>();
+        updateLevelMap(root, true); // Initialize levelMap with the root
+    }
+
+    // Add a node to the tree at the given level
+    public void addNode(Node parent, int childVal) {
+        // Determine the level of the new node
+        int childLevel = parent.level + 1;
+        Node child = new Node(childVal, childLevel);
+
+        // Update parent's children list
+        parent.children.add(child);
+
+        // Update levelMap
+        updateLevelMap(child, true);
+    }
+
+    // Remove a node from the tree
+    public void removeNode(Node parent, Node child) {
+        // Remove child from parent's child list
+        parent.children.remove(child);
+
+        // Update levelMap
+        updateLevelMap(child, false);
+    }
+
+    // Updates levelMap: add/remove counts dynamically
+    private void updateLevelMap(Node node, boolean add) {
+        int level = node.level;
+        if (add) {
+            levelMap.put(level, levelMap.getOrDefault(level, 0) + 1);
+        } else {
+            levelMap.put(level, levelMap.get(level) - 1);
+            if (levelMap.get(level) == 0) {
+                levelMap.remove(level); // Cleanup when the count becomes 0
+            }
+        }
+
+        // Recursively update for all child nodes
+        for (Node child : node.children) {
+            updateLevelMap(child, add);
+        }
+    }
+
+    // Get the number of nodes at a specific level in O(1) time
+    public int getNodeCountAtLevel(int level) {
+        return levelMap.getOrDefault(level, 0);
+    }
+
+    // Print the tree level counts (for debugging)
+    public void printLevelMap() {
+        System.out.println(levelMap);
+    }
+
+public static void main(String[] args) {
+    Node root = new Node(1, 0); // Root node at level 0
+    DynamicTree tree = new DynamicTree(root);
+
+    // Add nodes
+    tree.addNode(root, 2);
+    tree.addNode(root, 3);
+    tree.addNode(root, 4);
+
+    Node child = root.children.get(1); // Node with value 3
+    tree.addNode(child, 5);
+
+    // Print the level map
+    tree.printLevelMap(); // Output: {0=1, 1=3, 2=1}
+
+    // Query node count at level 1 and level 2
+    System.out.println(tree.getNodeCountAtLevel(1)); // Output: 3
+    System.out.println(tree.getNodeCountAtLevel(2)); // Output: 1
+
+    // Remove a node
+    tree.removeNode(root, child); // Remove node with value 3 (and its subtree)
+    tree.printLevelMap(); // Output: {0=1, 1=2}
+}
+}
